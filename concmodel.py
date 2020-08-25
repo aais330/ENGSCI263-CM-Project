@@ -1,0 +1,47 @@
+# imports
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy.integrate import solve_ivp
+
+def conc_model(t,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,C,alpha):
+    ''' Return the derivative dc/dt at time, t, for given parameters.
+
+        Parameters:
+        -----------
+        t: float
+
+        tc: float
+
+        n : float
+            Number of cows
+        b : float
+            Carbon sink parameter
+        P : float
+            Pressure across aquifer in MPa**
+        Psurf : float
+            Change in surface pressure **
+        bc : float
+            Recharge parameter **
+        Pa : float
+            Pressure drop across aquifer in MPa**
+        PMAR: float
+
+        tMAR: float
+
+        C : float
+            Concentration of nitrate across aquifer in mg/L**
+        alpha: float
+
+
+        Returns:
+        --------
+        dcdt : float
+                Rate of change of nitrate concentration
+
+    '''
+    if t>=tc:
+        b=alpha*b
+    if t>=tMAR:
+        Pa+=PMAR
+
+    return -n*b*(P-Psurf)+bc*C*(P-(Pa/2))
