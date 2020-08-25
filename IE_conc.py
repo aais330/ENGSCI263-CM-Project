@@ -48,18 +48,18 @@ cs[0] = 0.2
 n_int=np.interp(ts,tn,n)
 c_int=np.interp(ts,tcon,c)
 
-for i in range(len(tcon)-1):
+for i in range(len(ts)-1):
     P1=0
     b1=1
     n1=n_int[i+1]
-    cs[i+1]=IEStep(conc_model, ts[i], c_int[i], step, tc,n_int[i],b,P,Psurf,bc,Pa,PMAR,tMAR,alpha,n1,b1,P1)
+    cs[i+1]=IEStep(conc_model,ts[i],c_int[i],step,tc,n_int[i],b,P,Psurf,bc,Pa,PMAR,tMAR,alpha,n1,b1,P1)
 
 #take away first 10 (as no data for those years)
 # tn=tcon[10:]
 # n_int=n_int[10:]
 
 # plot
-# plt.plot(tn,n_int,'or',label='cow data')
+# plt.plot(tn,n,'or',label='cow data')
 # plt.plot(tcon,c,'ok',label='conc data')
 plt.plot(ts,cs,'b',label='IE solution')
 # plt.legend()
