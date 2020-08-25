@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import math
-
-
+from concmodel import *
+import pandas as pd
 
 def ode_model(t,P,b,dP_aq,dP_Mar=0):
     ''' Return the derivative dx/dt at time, t, for given parameters.
@@ -169,11 +169,7 @@ def plot_benchmark():
     ax.plot(t,P, 'b')
     ax.legend('Improved Euler solution')
     
-    plt.show()
-
-
-
-        
+    # plt.show()
 
 if __name__ == "__main__":
     plot_benchmark()

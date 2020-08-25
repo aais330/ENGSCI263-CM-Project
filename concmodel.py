@@ -3,13 +3,15 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
-def conc_model(t,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,C,alpha):
+def conc_model(t,c,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,alpha):
     ''' Return the derivative dc/dt at time, t, for given parameters.
 
         Parameters:
         -----------
         t: float
 
+        c : float
+            Concentration of nitrate across aquifer in mg/L**
         tc: float
 
         n : float
@@ -27,9 +29,7 @@ def conc_model(t,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,C,alpha):
         PMAR: float
 
         tMAR: float
-
-        C : float
-            Concentration of nitrate across aquifer in mg/L**
+        
         alpha: float
 
 
@@ -44,4 +44,4 @@ def conc_model(t,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,C,alpha):
     if t>=tMAR:
         Pa+=PMAR
 
-    return -n*b*(P-Psurf)+bc*C*(P-(Pa/2))
+    return -n*b*(P-Psurf)+bc*c*(P-(Pa/2))
