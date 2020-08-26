@@ -91,10 +91,11 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
     
-    if ((t-tau) > 1990.5):
+    if ((t-tau) > 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
         ni = n[0]
+    
     
     # Active carbon sink
     if ((t-tau)>t_acs):
@@ -177,7 +178,7 @@ def solve_dCdt(f,t,P, b1, alpha, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LMP_Model(t, b ,b1, alpha, bc, tau):
+def LMP_Model(t, b ,b1, alpha, bc,tau):
     '''
     Parameters
     ----------
@@ -217,7 +218,7 @@ def LMP_Model(t, b ,b1, alpha, bc, tau):
 
 # Solve pressure ODE
 pi = 0
-t = np.arange(1990,2020,step = 0.5)
+t = np.arange(1980,2020,step = 0.1)
 #parameters
 b=0.5
 b1=0.5
@@ -227,14 +228,12 @@ tau = 5
 # LMP_Model(t,b,b1,alpha,bc,tau)
 
 
-
-
 # Testing curve_fit
 # load in cow data and concentration data
 tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
-pars = curve_fit(LMP_Model,tcon,c)
+pars = curve_fit(LMP_Model,tcon,c,[1,1,1,1,15])
 print(pars)
 b=pars[0][0]
 b1=pars[0][1]
@@ -243,7 +242,7 @@ bc=pars[0][3]
 tau = pars[0][4]
 C = LMP_Model(t,b,b1,alpha,bc,tau)
 
-'''
+
 f,ax = plt.subplots(1,1)
 
 ax.plot(t,C,'k', label = 'Numeric Solution')
@@ -252,10 +251,12 @@ ax.set_title('Numerical Solution and data')
 plt.ylabel('Concentration')
 plt.xlabel('Time')
 
+'''
+# Plotting cows for reference
 ax2 = ax.twinx()
 ax2.plot(tn,n,'b', label = 'Data cows')
 ax2.set_ylabel('Number of cows')
-
+ax.legend() 
+'''
     
 plt.show()
-'''
