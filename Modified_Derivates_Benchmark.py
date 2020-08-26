@@ -37,8 +37,9 @@ if False:
     bc=1
     tau = 5
     
-    P_numerical = solve_dPdt(dPdt,t,0,[1])
-    C_Numerical = solve_dCdt(dCdt,t,P_numerical,b1,alpha,bc,tau)
+    #P_numerical = solve_dPdt(dPdt,t,0,[1])
+    #C_Numerical = solve_dCdt(dCdt,t,P_numerical,b1,alpha,bc,tau)
+    C_Numerical = LMP_Model(t,b,b1,alpha,bc,tau)
 
     f,ax = plt.subplots(1,1)
 
