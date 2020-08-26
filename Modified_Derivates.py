@@ -234,7 +234,7 @@ tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 pars = curve_fit(LMP_Model,tcon,c,[1,1,1,1,15])
-print(pars)
+# print(pars)
 b=pars[0][0]
 b1=pars[0][1]
 alpha=pars[0][2]
@@ -259,4 +259,4 @@ ax2.set_ylabel('Number of cows')
 ax.legend() 
 '''
     
-plt.show()
+# plt.show()
