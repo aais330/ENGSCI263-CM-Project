@@ -1,11 +1,44 @@
 import numpy as np
-from Improved_euler_model import *
+from scipy.optimize import curve_fit
+from matplotlib import pyplot as plt
+
+
+def improved_euler_step(f, tk, xk, h, pars = []): 
+
+    ''' Computes a single Improved Euler step.
+
+	Paramters
+	-----------
+	f: callable
+		Derivate function.
+	xk: float
+		Independent variable value at begining of step.
+	yk: float
+		Solution at begining of step.
+	h: float
+		step size.
+	pars: iterable
+		Optional parameters to pass to derivate function.
+
+	Returns
+	-----------
+	xk1: float
+		Solution at end of Improved Euler step
+
+	Notes
+	---------
+	Assumes the order of inputs to f is f(y,t,*pars).
+    '''
+    xk1_prediction = xk + h*f(xk,tk,*pars)
+    return xk + (h/2)*(f(xk,tk,*pars) + f(xk1_prediction, tk+h, *pars))
+
+
 
 '''
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LMP_Model(t,pi, b,b1,alpha,bc):
+def LMP_Model(t,pi, b ,b1, alpha, bc, tau):
     '''
     Parameters
     ----------
@@ -19,6 +52,8 @@ def LMP_Model(t,pi, b,b1,alpha,bc):
         Active carbon sink infiltration modication parameter
     bc : float
             dilution parameter
+    tau : float
+        time lag
 
     Returns
     -------
@@ -36,13 +71,13 @@ def LMP_Model(t,pi, b,b1,alpha,bc):
     tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
     #Pressure ODE
-    def dpPdt(pi, t, b):
+    def dPdt(P, t, b):
         '''
         Parameters:
         -----------
-        pi : float
-            intial pressure value (dependent variable)
-         t : float
+        P : float
+            pressure value (dependent variable)
+        t : float
             time value (independent variable)
         b : float
             Recharge strength parameter 
@@ -56,11 +91,9 @@ def LMP_Model(t,pi, b,b1,alpha,bc):
         t_mar = 2020 # Time when MAR begins
 
         if (t>t_mar):
-            dP_mar = 0.5 # Pressure difference increase due to MAR
-        else:
-            dP_mar = 0
+            dP_a += 0.5 # Pressure difference increase due to MAR
         
-        dPdt = -b*(pi + dP_a/2) -b*(pi-(dP_a + dP_mar)/2) 
+        dPdt = -b*(P + dP_a/2) -b*(P-(dP_a)/2) 
         return dPdt
 
    
@@ -93,12 +126,10 @@ def LMP_Model(t,pi, b,b1,alpha,bc):
         return P
 
     # Solve pressure ODE
-    P = solve_dPdt(dpPdt,t,pi,[b])
-
-    print(P)
-
+    P = solve_dPdt(dPdt,t,pi,[b])
+    
     # Concentration ODE
-    def dCdt(ci, t, b1, alpha, bc):
+    def dCdt(ci, t, P, b1, alpha, bc, tau):
         '''
         Parameters
         ----------
@@ -106,23 +137,90 @@ def LMP_Model(t,pi, b,b1,alpha,bc):
             Concentration of nitrate (dependent variable)
         t : float
             time value (independent variable)
+        P : float
+            Current pressure of aquifer
         b1 : float
             infliltration parameter
         alpha : float
             Active carbon sink infiltration modication parameter
         bc : float
             dilution parameter
+        tau : float
+            time lag paramter
 
         Returns
         -------
         dCdt : float
             rate of change of concentration in aquifer
         '''
-        ni = np.interp(t,tn,n) # interpolate number of cows
+        dP_a = 0.1 # Pressure difference across aquifer
+        dP_surf = 0.05 # Oversurface pressure
+        t_mar = 2020 # Time when MAR begins
+        t_acs = 2020 # Time active carbon sink was installed
 
-    
-        return  0 #-ni*b1*(P-Psurf)+bc*c*(P-(Pa/2))
 
+        # number of cows
+        tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+        '''
+        if ((t-tau) > 1990.5):
+            ni = np.interp(t-tau,tn,n) #interpolating number of cows
+        else:
+            ni = n[0]
+        '''
+        ni = 0
+
+        # Active carbon sink
+        if (t>t_acs):
+            b1 = alpha*b1
+
+        # MAR
+        if (t>t_mar):
+            dP_a += 0.5 # Pressure difference increase due to MAR
+
+        change = -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
+        return  change
+
+    # Solve concentration ODE
+    def solve_dCdt(f,t,P, b1, alpha, bc, tau):
+        '''
+        Parameters:
+        -----------
+        f : callable
+            Function that returns dxdt given variable and parameter inputs.
+        t : array-like
+            array of floats containing time value.
+        P : array-like
+            array of floats containing the pressure within the aquifer
+        b1 : float
+            infliltration parameter
+        alpha : float
+            Active carbon sink infiltration modication parameter
+        bc : float
+            dilution parameter
+        tau : float
+            time lag paramter
+
+        Returns:
+        -------
+        C : array-like
+            An array of concentrations
+        '''
+        C = np.zeros(t.shape) # intialising concentration array
+        C[0] = 0.2
+        dt = t[1]-t[0]
+
+        # Solve using improved euler method
+        for i in range(len(t)-1):
+            pars = [P[i],b1,alpha,bc,tau]
+            output = improved_euler_step(f,t[i],C[i],dt,pars)
+            C[i+1] = output
+
+        return C
+
+    # Solve concentration ODE
+    C = solve_dCdt(dCdt,t,P,b1,alpha,bc,tau)
+    plt.plot(t,C)
+    plt.show()
 
 
     return 0
@@ -133,7 +231,8 @@ pi = 0
 t = np.arange(1980,2020,step = 0.5)
 #parameters
 b=0.5
-b1=0
+b1=0.5
 alpha=0
-bc=0
-LMP_Model(t,pi,b,b1,alpha,bc)
+bc=1
+tau = 5
+LMP_Model(t,pi,b,b1,alpha,bc,tau)
