@@ -50,12 +50,17 @@ def dPdt(P, t, b):
         rate of change of pressure in aquifer
     '''
     dP_a = 0.5 # Pressure difference across aquifer
+    dP_a1 = 0.5
+    dP_mar = 0.5
+
     t_mar = 2020 # Time when MAR begins
 
-    if (t>t_mar):
-        dP_a += 0.5 # Pressure difference increase due to MAR
+    if (t>t_mar): # FIX THIS IF ELSE STATEMENT
+        dP_a1  += dP_mar
+
+
         
-    return -b*(P + dP_a/2) -b*(P-(dP_a)/2) 
+    return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
 
 # Concentration ODE
 def dCdt(ci, t, P, b1, alpha, bc, tau):
@@ -94,7 +99,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     if ((t-tau) > 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
-        ni = n[0]
+        ni = 20000
     
     
     # Active carbon sink
@@ -207,19 +212,23 @@ def LMP_Model(t, b ,b1, alpha, bc,tau):
     # intial pressure
     pi = 0
     
+    #Define tv
+    tv = np.arange(1990,2020,step = 0.1)
       
     # Solve pressure ODE
-    P = solve_dPdt(dPdt,t,pi,[b])
+    P = solve_dPdt(dPdt,tv,pi,[b])
 
     # Solve concentration ODE 
-    C = solve_dCdt(dCdt,t,P,b1,alpha,bc,tau)
+    C = solve_dCdt(dCdt,tv,P,b1,alpha,bc,tau)
 
-    return C
+    # INTERPOLATE to T (from Tcon)
+    C_interp = np.interp(t,tv,C)
+    return C_interp
 
 
 # Solve pressure ODE
 pi = 0
-t = np.arange(1980,2020,step = 0.1)
+t = np.arange(1980,2020,step = 0.5)
 #parameters
 b=0.5
 b1=0.5
@@ -231,7 +240,6 @@ tau = 5
 
 # Testing curve_fit
 # load in cow data and concentration data
-tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 pars = curve_fit(LMP_Model,tcon,c,[1,1,1,1,15])
@@ -246,7 +254,7 @@ tau_array = np.ones(t.shape)*(tau/2)
 
 f,ax = plt.subplots(1,1)
 
-ax.plot(t-tau_array,C,'k', label = 'Numeric Solution')
+ax.plot(t,C,'k', label = 'Numeric Solution')
 ax.plot(tcon,c,'r+', label = 'Data')
 ax.set_title('Numerical Solution and data')
 plt.ylabel('Concentration')
