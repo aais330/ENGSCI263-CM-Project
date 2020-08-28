@@ -49,9 +49,10 @@ def dPdt(P, t, b):
      dPdt : float
         rate of change of pressure in aquifer
     '''
-    dP_a = 0.5 # Pressure difference across aquifer
-    dP_a1 = 0.5
-    dP_mar = 0.5
+    
+    dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
+    dP_a1 = 0.1
+    dP_mar = 0.1
 
     t_mar = 2020 # Time when MAR begins
 
