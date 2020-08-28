@@ -73,6 +73,7 @@ def get_samples(pars, P, N_samples):
     A, B, C, D, E = np.meshgrid(pars[0][0], pars[0][1], pars[0][2], pars[0][3], pars[0][4], indexing='ij')
 
     mean, covariance = fit_mvn([A,B,C,D,E], P)
+    #mean = np.average(P)
 
     # 1. create samples using numpy function multivariate_normal (Google it)
     samples = np.random.multivariate_normal(mean, covariance, size = N_samples)
@@ -156,8 +157,8 @@ t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 #using curve_fit() to find best parameters to input
 pars = curve_fit(LMP_Model,t0,c0,[1,1,1,1,15])
-b, b1, alpha, bc, tau, P = grid_search(10, pars)
+b, b1, alpha, bc, tau, P = grid_search(3, pars)
 
-samples = get_samples(pars, P, 10)
+samples = get_samples(pars, P, 3)
 
 ensemble(samples)
