@@ -159,12 +159,26 @@ def ensemble(samples):
 
 #error_bar_plot()
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-#t = np.arange(1980,2020,step = 0.5)
+t = np.arange(1980,2020,step = 0.5)
 
 #using curve_fit() to find best parameters to input
-pars = curve_fit(LMP_Model,t0,c0,[1,1,1,1,15])
-b, bc, tau, P = grid_search(3, pars)
+# pars = curve_fit(LMP_Model,t0,c0,[1,1,1,1,15])
+# b, bc, tau, P = grid_search(3, pars)
 
-samples = get_samples(pars, P, 3)
+# samples = get_samples(pars, P, 3)
 
-ensemble(samples)
+# ensemble(samples)
+
+sigma = [0.25]*len(c0)
+p, cov = curve_fit(LMP_Model,t0,c0,[1,1,1,1,15], sigma=sigma)
+ps = np.random.multivariate_normal(p, cov, 30)
+
+fig = plt.figure(figsize=(10,6))
+ax = fig.add_subplot(111)
+ax.plot(t0,c0,'ro', markersize=1.2, label='data')
+ax.plot(t, LMP_Model(t, *p), 'r-', label='best-fit')
+for pi in ps:
+    ax.plot(t, LMP_Model(t, *pi), 'k-', alpha=0.2, lw=0.5)
+ax.plot([], [], lw=0.5, label='posterior samples')
+ax.legend()
+plt.show(0)
