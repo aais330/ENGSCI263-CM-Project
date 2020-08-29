@@ -46,4 +46,4 @@ ax2.set_ylabel('Number of cows')
 ax.legend() 
 '''
     
-# plt.show()
+plt.show()

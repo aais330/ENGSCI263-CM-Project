@@ -98,11 +98,12 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
 
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
-    
+
     if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
         ni = 20000
+
     
     
     # Active carbon sink
@@ -216,7 +217,7 @@ def LMP_Model(t, b ,b1, alpha, bc,tau):
     pi = 0
     
     #Define tv
-    tv = np.arange(1990,2020,step = 0.1)
+    tv = np.arange(1980,2020,step = 0.1)
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv,pi,[b])

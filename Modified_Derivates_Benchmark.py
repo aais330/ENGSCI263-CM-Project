@@ -1,6 +1,6 @@
 # This script benchmarks the two ODEs formulated in the Modified_Derivates script
 
-from Modified_Derivates import *
+from model_functions import *
 
 # Pressure benchmark without MAR
 if False:
@@ -22,6 +22,9 @@ if False:
     plt.xlim(1980,2020)
     plt.ylim(-5,5)
 
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
+
     plt.show()
 
 # Concentration benchmark with no cows
@@ -35,7 +38,7 @@ if False:
     b1=0.5
     alpha=0
     bc=1
-    tau = 5
+    tau = 0
     
     #P_numerical = solve_dPdt(dPdt,t,0,[1])
     #C_Numerical = solve_dCdt(dCdt,t,P_numerical,b1,alpha,bc,tau)
@@ -49,6 +52,9 @@ if False:
     ax.set_title('Analytical vs Numeric solution (no cows)')
     plt.ylabel('Concentration')
     plt.xlabel('Time')
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
     
     plt.show()
 
@@ -76,6 +82,9 @@ if False:
     ax.set_title('Analytical vs Numeric solution (100 cows)')
     plt.ylabel('Concentration')
     plt.xlabel('Time')
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
     
     plt.show()
 
