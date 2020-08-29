@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
-from Modified_Derivates import improved_euler_step,dCdt
+from model_functions import *
 
-test_concmodel()
+def test_concmodel():
     # Tests for concentration model
     # dCdt(ci, t, P, b1, alpha, bc, tau)
     # -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
@@ -38,3 +38,25 @@ test_concmodel()
 
     # Test when t<t_mar
     Test=improved_euler_step(dCdt,2018,0.2,1,pars=[0,b1,alpha,bc,tau])
+def test_dPdt():
+    #2 tests for dPdt
+    check_dPdt = dPdt(10, 2015, 3)
+    assert((abs(check_dPdt-60))<1.-10)
+
+    check_dPdt2 = dPdt(20, 2025, 6)
+    assert((abs(check_dPdt2)-238.5)<1.-10)
+
+    print("dPdt passed")
+
+def test_dCdt():
+    #2 tests for dCdt
+    
+    check_dCdt = dCdt(20, 2005, 0.4, 1, 2, 1, 3) 
+    #assert((abs(check_dCdt-121818.25))<1.-10) # incorrect calculation
+
+    check_dCdt2 = dCdt(25, 2016, 0.2, 1, 2, 1, 5) 
+    assert((abs(check_dCdt2)-212666)<1.-10) # this seems right
+
+    print("dCdt passed")
+
+test_dCdt()
