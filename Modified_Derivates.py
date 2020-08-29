@@ -5,7 +5,7 @@ from model_functions import *
 
 # Solve pressure ODE
 pi = 0
-t = np.arange(1998,2020,step = 1)
+t = np.arange(1980,2020,step = 1)
 #parameters
 b=0.5
 b1=0.5
@@ -29,14 +29,15 @@ bc=pars[0][3]
 tau = pars[0][4]
 C = LMP_Model(t,b,b1,alpha,bc,tau)
 
-
-f,ax = plt.subplots(1,1)
+fig = plt.figure(figsize=(10,6))
+ax = fig.add_subplot(111)
 
 ax.plot(t,C,'k', label = 'Numeric Solution')
-ax.plot(tcon,c,'r+', label = 'Data')
-ax.set_title('Numerical Solution and data')
-plt.ylabel('Concentration')
-plt.xlabel('Time')
+ax.plot(tcon,c,'ro', markersize=2.0, label = 'Data')
+ax.set_title('Numerical Solution vs Data')
+plt.ylabel('Concentration(mg/L)')
+plt.xlabel('Time(Years)')
+plt.legend()
 
 '''
 # Plotting cows for reference
@@ -46,4 +47,9 @@ ax2.set_ylabel('Number of cows')
 ax.legend() 
 '''
     
+<<<<<<< HEAD
 plt.show()
+=======
+#plt.show()
+plt.savefig("model.png")
+>>>>>>> fd69ccc774b040031d4ac4e0a8525487a75e1257
