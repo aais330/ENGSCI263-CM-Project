@@ -36,13 +36,13 @@ def error_bar_plot():
 
 def grid_search(N, pars):
     b = np.linspace(pars[0][0]/2,pars[0][0]*1.5, N)
-    b1 = np.linspace(pars[0][1]/2,pars[0][1]*1.5, N)
-    alpha = np.linspace(pars[0][2]/2,pars[0][2]*1.5, N)
+    # b1 = np.linspace(pars[0][1]/2,pars[0][1]*1.5, N)
+    # alpha = np.linspace(pars[0][2]/2,pars[0][2]*1.5, N)
     bc = np.linspace(pars[0][3]/2,pars[0][3]*1.5, N)
     tau = np.linspace(pars[0][4]/2,pars[0][4]*1.5, N)
 
     # grid of parameter values: returns every possible combination of parameters in a and b
-    A, B, C, D, E = np.meshgrid(b, b1, alpha, bc, tau, indexing='ij')
+    A, B, C= np.meshgrid(b, bc, tau, indexing='ij')
 
     # empty 2D matrix for objective function
     S = np.zeros(A.shape)
@@ -52,27 +52,33 @@ def grid_search(N, pars):
 
     v = 0.5
 
+    # for i in range(len(b)):
+    #     for j in range(len(b1)):
+    #         # 2. compute the sum of squares objective function at each value 
+    #         for k in range(len(alpha)):
+    #             for l in range(len(bc)):
+    #                 for m in range(len(tau)):
+    #                     Cm = LMP_Model(t0, b[i], b1[j], alpha[k],bc[l], tau[m])
+    #                     S[i,j,k,l,m] = np.sum(np.square(np.subtract(Cm, c0)/v))
+
     for i in range(len(b)):
-        for j in range(len(b1)):
-            # 2. compute the sum of squares objective function at each value 
-            for k in range(len(alpha)):
-                for l in range(len(bc)):
-                    for m in range(len(tau)):
-                        Cm = LMP_Model(t0, b[i], b1[j], alpha[k],bc[l], tau[m])
-                        S[i,j,k,l,m] = np.sum(np.square(np.subtract(Cm, c0)/v))
+        for j in range(len(bc)):
+            for k in range(len(tau)):
+                Cm = LMP_Model(t0, b[i], 0.5, 0.1, bc[j], tau[k])
+                S[i,j,k] = np.sum(np.square(np.subtract(Cm, c0)/v))
 
     # 3. compute the posterior
     P = np.exp(-S/2)
 
-    Pint = np.sum(P)*(b[1]-b[0])*(b1[1]-b1[0])*(alpha[1]-alpha[0])*(bc[1]-bc[0])*(tau[1]-tau[0])
+    Pint = np.sum(P)*(b[1]-b[0])*(bc[1]-bc[0])*(tau[1]-tau[0])
 
     P = np.true_divide(P, Pint)
-    return b, b1, alpha, bc, tau, P
+    return b, bc, tau, P
 
 def get_samples(pars, P, N_samples):
-    A, B, C, D, E = np.meshgrid(pars[0][0], pars[0][1], pars[0][2], pars[0][3], pars[0][4], indexing='ij')
+    A, B, C = np.meshgrid(pars[0][0], pars[0][3], pars[0][4], indexing='ij')
 
-    mean, covariance = fit_mvn([A,B,C,D,E], P)
+    mean, covariance = fit_mvn([A,B,C], P)
     #mean = np.average(P)
 
     # 1. create samples using numpy function multivariate_normal (Google it)
@@ -131,8 +137,8 @@ def ensemble(samples):
     ax = fig.add_subplot(111)
     
     # for each sample, solve and plot the model  (see TASK 1)
-    for a,b,c,d,e in samples:
-        pm = LMP_Model(t,a,b,c,d,e)
+    for a,b,c in samples:
+        pm = LMP_Model(t,a, 0.5, 0.1, b,c)
         ax.plot(t,pm,'k-', lw = 0.5, alpha = 0.3)
 
     # this command just adds a line to the legend
@@ -157,7 +163,7 @@ t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 #using curve_fit() to find best parameters to input
 pars = curve_fit(LMP_Model,t0,c0,[1,1,1,1,15])
-b, b1, alpha, bc, tau, P = grid_search(3, pars)
+b, bc, tau, P = grid_search(3, pars)
 
 samples = get_samples(pars, P, 3)
 
