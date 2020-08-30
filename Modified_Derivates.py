@@ -5,7 +5,7 @@ from model_functions import *
 
 # Solve pressure ODE
 pi = 0
-t = np.arange(1980,2020,step = 1)
+t = np.arange(1998,2020,step = 1)
 #parameters
 b=0.5
 b1=0.5

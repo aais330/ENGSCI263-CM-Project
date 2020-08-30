@@ -94,7 +94,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     dP_surf = 0.05 # Oversurface pressure
     t_mar = 2020 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
-
+    
 
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
@@ -104,7 +104,6 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     else:
         ni = 20000
 
-    
     
     # Active carbon sink
     if ((t-tau)>t_acs):

@@ -45,3 +45,8 @@ def conc_model(t,c,tc,n,b,P,Psurf,bc,Pa,PMAR,tMAR,alpha):
         Pa+=PMAR
 
     return -n*b*(P-Psurf)+bc*c*(P-(Pa/2))
+
+tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+
+ni = np.interp(2000,tn,n) #interpolating number of cows
+print(ni)
