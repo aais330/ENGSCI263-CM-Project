@@ -28,7 +28,13 @@ def test_dPdt():
     check_dPdt2 = dPdt(20, 2025, 6)
     assert((abs(check_dPdt2)-238.5)<tol)
 
-    print("dPdt passed")
+    check_dPdt3 = dPdt(15, 2019, 0.2)
+    assert((abs(check_dPdt3)-6)<tol)
+
+    check_dPdt4 = improved_euler_step(dPdt, 2019, 6, 1, pars=[0.2])
+    assert((abs(check_dPdt4)-5.95)<tol)
+
+    print("dPdt passed \n")
 
 def test_dCdt():
     #2 tests for dCdt
@@ -57,6 +63,6 @@ def test_dCdt():
     # Tests when t-tau < 1990.5
 
 
-    print("dCdt passed")
+    print("dCdt passed \n")
 
-test_dCdt()
+test_dPdt()
