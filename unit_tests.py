@@ -31,9 +31,12 @@ def test_dPdt():
     check_dPdt3 = dPdt(15, 2019, 0.2)
     assert((check_dPdt3+6)<tol)
 
-    check_dPdt4 = improved_euler_step(dPdt, 2019, 6, 1, pars=[0.2])
-    print(check_dPdt4)
-    assert((check_dPdt4+5.95)<tol)
+    #test when switches to tmar on
+    check_dPdt4 = improved_euler_step(dPdt, 2019, -6, 1, pars=[0.2])
+    assert((check_dPdt4+11.975)<tol) #calculation gave me 11.975, maybe i missed something?
+
+    check_dPdt4 = improved_euler_step(dPdt, 2019.6, 6, 0.2, pars=[0.2])
+    assert((check_dPdt4+4.08)<tol)
 
     print("dPdt passed \n")
 
