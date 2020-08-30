@@ -18,21 +18,22 @@ dP_a = 0.1
 dP_surf = 0.05 
 t_mar = 2020 
 t_acs = 2010 
-tol=1.-10
+tol=1.e-10
 
 def test_dPdt():
     #2 tests for dPdt
     check_dPdt = dPdt(10, 2015, 3)
-    assert((abs(check_dPdt-60))<tol)
+    assert((check_dPdt+60)<tol)
 
     check_dPdt2 = dPdt(20, 2025, 6)
-    assert((abs(check_dPdt2)-238.5)<tol)
+    assert((check_dPdt2)+238.5<tol)
 
     check_dPdt3 = dPdt(15, 2019, 0.2)
-    assert((abs(check_dPdt3)-6)<tol)
+    assert((check_dPdt3+6)<tol)
 
     check_dPdt4 = improved_euler_step(dPdt, 2019, 6, 1, pars=[0.2])
-    assert((abs(check_dPdt4)-5.95)<tol)
+    print(check_dPdt4)
+    assert((check_dPdt4+5.95)<tol)
 
     print("dPdt passed \n")
 
