@@ -47,9 +47,5 @@ ax2.set_ylabel('Number of cows')
 ax.legend() 
 '''
     
-<<<<<<< HEAD
 plt.show()
-=======
-#plt.show()
 plt.savefig("model.png")
->>>>>>> fd69ccc774b040031d4ac4e0a8525487a75e1257
