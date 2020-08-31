@@ -170,8 +170,8 @@ def solve_dCdt(f,t,P, b1, alpha, bc, tau):
         An array of concentrations
     '''
     C = np.zeros(t.shape) # intialising concentration array
-    C[0] = 0.2  #OLD INTIAL CONCENTRAION (DO NOT DELETE)
-    # C[0] = 4.2
+    # C[0] = 0.2  #OLD INTIAL CONCENTRAION (DO NOT DELETE)
+    C[0] = 4.2
     dt = t[1]-t[0]
 
     # Solve using improved euler method
@@ -217,8 +217,8 @@ def LMP_Model(t, b ,b1, alpha, bc,tau):
     pi = 0
     
     #Define tv
-    tv = np.arange(1980,2020,step = 0.25) #ORIGNAL TIME PERIOD (DO NOT DELETE)
-    # tv = np.arange(1999,2019.25,step = 0.25) # New Time period
+    # tv = np.arange(1980,2020,step = 0.1) #ORIGNAL TIME PERIOD (DO NOT DELETE)
+    tv = np.arange(1999,2019.25,step = 0.25) # New Time period
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv,pi,[b])
