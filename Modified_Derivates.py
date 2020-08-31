@@ -5,7 +5,7 @@ from model_functions import *
 
 # Solve pressure ODE
 pi = 0
-t = np.arange(1999,2019.25,step = 0.25)
+t = np.arange(1999,2019.25,step = 1)
 
 # Testing curve_fit
 # load in cow data and concentration data

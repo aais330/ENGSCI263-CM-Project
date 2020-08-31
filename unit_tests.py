@@ -82,7 +82,5 @@ def test_dCdt():
 
     print("dCdt passed \n")
 
-# Do we need to add tests for LMP_Model and solve_dCdt?
-
 test_dPdt()
 test_dCdt()
