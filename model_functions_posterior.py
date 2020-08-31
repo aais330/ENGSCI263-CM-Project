@@ -66,7 +66,7 @@ def dPdt(P, t, b):
     return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
 
 # Concentration ODE
-def dCdt(ci, t, P, b1, alpha, bc, tau):
+def dCdt(ci, t, P,b1, alpha, bc, tau):
     '''
     Parameters
     ----------
@@ -145,7 +145,7 @@ def solve_dPdt(f, t, pi, b):
     return P
 
 # Solve concentration ODE
-def solve_dCdt(f,t,P, b1, alpha, bc, tau):
+def solve_dCdt(f,t,P,ci, b1, alpha, bc, tau):
     '''
     Parameters:
     -----------
@@ -171,7 +171,8 @@ def solve_dCdt(f,t,P, b1, alpha, bc, tau):
     '''
     C = np.zeros(t.shape) # intialising concentration array
     #C[0] = 0.2  OLD INTIAL CONCENTRAION (DO NOT DELETE)
-    C[0] = 4.2
+    #C[0] = 4.2
+    C[0] = ci
     dt = t[1]-t[0]
 
     # Solve using improved euler method
@@ -187,7 +188,7 @@ def solve_dCdt(f,t,P, b1, alpha, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LMP_Model(t, b ,b1, alpha, bc,tau):
+def LMP_Model(t, b, pi, ci ,b1, alpha, bc,tau):
     '''
     Parameters
     ----------
@@ -214,7 +215,6 @@ def LMP_Model(t, b ,b1, alpha, bc,tau):
         array of times that correspond to pressure and concentration values
     '''
     # intial pressure
-    pi = 0
     
     #Define tv
     # tv = np.arange(1980,2020,step = 0.1) ORIGNAL TIME PERIOD (DO NOT DELETE)
@@ -224,7 +224,7 @@ def LMP_Model(t, b ,b1, alpha, bc,tau):
     P = solve_dPdt(dPdt,tv,pi,[b])
 
     # Solve concentration ODE 
-    C = solve_dCdt(dCdt,tv,P,b1,alpha,bc,tau)
+    C = solve_dCdt(dCdt,tv,P,ci,b1,alpha,bc,tau)
 
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)
