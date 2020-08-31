@@ -20,6 +20,13 @@ t_mar = 2020
 t_acs = 2010 
 tol=1.e-10
 
+def func(x,y,pars=[]):
+    pass
+
+def test_ie():
+    #simple function testing
+    pass
+
 def test_dPdt():
     # t < t_mar
     check_dPdt = dPdt(10, 2015, 3)
