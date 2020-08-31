@@ -66,7 +66,7 @@ def dPdt(P, t, b):
     return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
 
 # Concentration ODE
-def dCdt(ci, t, P,b1, alpha, bc, tau):
+def dCdt(ci, t, P,b1, bc, tau):
     '''
     Parameters
     ----------
@@ -94,6 +94,7 @@ def dCdt(ci, t, P,b1, alpha, bc, tau):
     dP_surf = 0.05 # Oversurface pressure
     t_mar = 2020 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
+    alpha = 0.1
     
 
     # number of cows
@@ -145,7 +146,7 @@ def solve_dPdt(f, t, pi, b):
     return P
 
 # Solve concentration ODE
-def solve_dCdt(f,t,P,ci, b1, alpha, bc, tau):
+def solve_dCdt(f,t,P,ci, b1, bc, tau):
     '''
     Parameters:
     -----------
@@ -177,7 +178,7 @@ def solve_dCdt(f,t,P,ci, b1, alpha, bc, tau):
 
     # Solve using improved euler method
     for i in range(len(t)-1):
-        pars = [P[i],b1,alpha,bc,tau]
+        pars = [P[i],b1,bc,tau]
         output = improved_euler_step(f,t[i],C[i],dt,pars)
         C[i+1] = output
 
@@ -188,7 +189,7 @@ def solve_dCdt(f,t,P,ci, b1, alpha, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LMP_Model(t, b, pi, ci ,b1, alpha, bc,tau):
+def LPM_Model(t, ci, b, pi ,b1, bc,tau):
     '''
     Parameters
     ----------
@@ -224,7 +225,7 @@ def LMP_Model(t, b, pi, ci ,b1, alpha, bc,tau):
     P = solve_dPdt(dPdt,tv,pi,[b])
 
     # Solve concentration ODE 
-    C = solve_dCdt(dCdt,tv,P,ci,b1,alpha,bc,tau)
+    C = solve_dCdt(dCdt,tv,P,ci,b1,bc,tau)
 
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)
