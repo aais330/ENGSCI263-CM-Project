@@ -34,4 +34,5 @@ for pi in ps:
 ax.plot([], [], lw=0.5, label='posterior samples')
 ax.set_ylim(0,16)
 ax.legend()
-plt.show()
+#plt.show()
+plt.savefig("posterior.png")
