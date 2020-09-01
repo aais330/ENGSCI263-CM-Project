@@ -286,7 +286,8 @@ tau=5
 dP_Mar = 0.01
 C_interp = model_ensemble(50,t,b,b1,alpha,bc,tau, dP_Mar)
 
-f,ax = plt.subplots(1,1)
+f = plt.figure(figsize=(10,6))
+ax = f.add_subplot(111)
 ax.plot(t[0:401], C_interp[0][0:401], 'k')
 
 count = 0
@@ -299,7 +300,7 @@ C_interp = model_ensemble(50,t,b,b1,alpha,bc,tau, dP_Mar)
 
 count = 0
 while(count < len(C_interp)):
-    ax.plot(t[400:501], C_interp[count][400:501], 'b', linewidth=0.15, label='MAR pressure increase = 0.05 MPa')
+    ax.plot(t[400:501], C_interp[count][400:501], 'b', linewidth=0.15)
     count+=1
 
 dP_Mar = 0.1
@@ -307,7 +308,7 @@ C_interp = model_ensemble(50,t,b,b1,alpha,bc,tau, dP_Mar)
 
 count = 0
 while(count < len(C_interp)):
-    ax.plot(t[400:501], C_interp[count][400:501], 'r', linewidth=0.15, label='MAR pressure increase = 0.1 MPa')
+    ax.plot(t[400:501], C_interp[count][400:501], 'r', linewidth=0.15)
     count+=1
 
 dP_Mar = 0
@@ -315,10 +316,15 @@ C_interp = model_ensemble(50,t,b,b1,alpha,bc,tau, dP_Mar)
 
 count = 0
 while(count < len(C_interp)):
-    ax.plot(t[400:501], C_interp[count][400:501], 'k', linewidth=1, label='MAR pressure increase = 0 MPa')
+    ax.plot(t[400:501], C_interp[count][400:501], 'k', linewidth=1)
     count+=1
 ax.set_xlabel('Year')
 ax.set_ylabel('Pressure (MPa)')
+ax.plot([], [], 'g', lw=0.5, label='MAR pressure increase = 0.01 MPa')
+ax.plot([], [], 'b', lw=0.5, label='MAR pressure increase = 0.05 MPa')
+ax.plot([], [], 'r', lw=0.5, label='MAR pressure increase = 0.1 MPa')
+ax.plot([], [], 'k', lw=0.5, label='MAR pressure increase = 0.0 MPa')
 ax.set_title('Projections to year 2030 with different MAR pressures')
+ax.legend()
 
 plt.savefig('model_ensemble.png',dpi=300)
