@@ -15,7 +15,7 @@ tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 # pars, cov = curve_fit(LMP_Model,tcon,c,[1,1,1,1,15], sigma= sigma)
 pars,cov= curve_fit(LMP_Model,tcon,c,[1,1,1,1,15])
-# print(pars)
+#print(pars)
 b=pars[0]
 b1=pars[1]
 alpha=pars[2]
