@@ -229,3 +229,26 @@ def LPM_Model(t, ci, b, pi ,b1,alpha, bc,tau):
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)
     return C_interp
+
+def posterior_pars():
+    '''
+    Returns
+    -------
+    pos : ndarray
+        Array of shape (N,) containing spread of parameter values
+    p : array
+        Optimal values of the parameters with minimal variance from data
+    
+    Notes
+    -----
+    Utilises other functions in the same file and requires no inputs
+    '''
+    # reading data for curve_fit calibration
+    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
+
+    sigma = [1.e-14]*len(c0) # variance limit of pars
+
+    # calibrating model to data and creating covariance matrix
+    p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) 
+    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    return pos, p

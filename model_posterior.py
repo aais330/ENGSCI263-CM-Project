@@ -20,10 +20,7 @@ T0 = np.vander(t, n_order+1, increasing=True)
 c, c_var = br.predict(T0, return_std=True)
 '''
 
-sigma = [1.e-14]*len(c0)
-
-p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) # p0=[0.2,0.5,0.5,1,1,5]
-ps = np.random.multivariate_normal(p, cov, 100)
+ps, p = posterior_pars()
 v=0.3
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
