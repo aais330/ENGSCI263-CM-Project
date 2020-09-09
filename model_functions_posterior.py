@@ -56,7 +56,7 @@ def dPdt(P, t, b):
     dP_a1 = 0.1
     dP_mar = 0.5
 
-    t_mar = 2020 # Time when MAR begins
+    t_mar = 2030 # Time when MAR begins
 
     if (t>t_mar): # FIX THIS IF ELSE STATEMENT
         dP_a1  += dP_mar
@@ -66,7 +66,7 @@ def dPdt(P, t, b):
     return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
 
 # Concentration ODE
-def dCdt(ci, t, P,b1, bc, tau):
+def dCdt(ci, t, P,b1,alpha, bc, tau):
     '''
     Parameters
     ----------
@@ -92,9 +92,8 @@ def dCdt(ci, t, P,b1, bc, tau):
     '''
     dP_a = 0.1 # Pressure difference across aquifer
     dP_surf = 0.05 # Oversurface pressure
-    t_mar = 2020 # Time when MAR begins
+    t_mar = 2030 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
-    alpha = 0.1
     
 
     # number of cows
@@ -103,7 +102,7 @@ def dCdt(ci, t, P,b1, bc, tau):
     if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
-        ni = 20000
+        ni = 10000
 
     
     # Active carbon sink
@@ -146,7 +145,7 @@ def solve_dPdt(f, t, pi, b):
     return P
 
 # Solve concentration ODE
-def solve_dCdt(f,t,P,ci, b1, bc, tau):
+def solve_dCdt(f,t,P,ci, b1,alpha, bc, tau):
     '''
     Parameters:
     -----------
@@ -178,7 +177,7 @@ def solve_dCdt(f,t,P,ci, b1, bc, tau):
 
     # Solve using improved euler method
     for i in range(len(t)-1):
-        pars = [P[i],b1,bc,tau]
+        pars = [P[i],b1,alpha,bc,tau]
         output = improved_euler_step(f,t[i],C[i],dt,pars)
         C[i+1] = output
 
@@ -189,7 +188,7 @@ def solve_dCdt(f,t,P,ci, b1, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LPM_Model(t, ci, b, pi ,b1, bc,tau):
+def LPM_Model(t, ci, b, pi ,b1,alpha, bc,tau):
     '''
     Parameters
     ----------
@@ -219,13 +218,13 @@ def LPM_Model(t, ci, b, pi ,b1, bc,tau):
     
     #Define tv
     # tv = np.arange(1980,2020,step = 0.1) ORIGNAL TIME PERIOD (DO NOT DELETE)
-    tv = np.arange(1999,2019.25,step = 0.25) # New Time period
+    tv = np.arange(1980,2030,step = 0.25) # New Time period
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv,pi,[b])
 
     # Solve concentration ODE 
-    C = solve_dCdt(dCdt,tv,P,ci,b1,bc,tau)
+    C = solve_dCdt(dCdt,tv,P,ci,b1,alpha,bc,tau)
 
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)

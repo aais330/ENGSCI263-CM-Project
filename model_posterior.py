@@ -7,7 +7,7 @@ from model_functions_posterior import *
 from sklearn.linear_model import BayesianRidge
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-t = np.arange(1999,2019.5,step = 0.05)
+t = np.arange(1980,2030,step = 0.05)
 '''
 n_order = 1
 cv, tv = np.array(c0), np.array(t0)
@@ -22,7 +22,7 @@ c, c_var = br.predict(T0, return_std=True)
 
 sigma = [1.e-14]*len(c0)
 
-p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma, p0=[0.2,0.5,0.5,1,1,5])
+p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) # p0=[0.2,0.5,0.5,1,1,5]
 ps = np.random.multivariate_normal(p, cov, 100)
 v=0.3
 fig = plt.figure(figsize=(10,6))

@@ -1,36 +1,11 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
+from model_functions_posterior import *
 
-
-def improved_euler_step(f, tk, xk, h, pars = []): 
-
-    ''' Computes a single Improved Euler step.
-	Paramters
-	-----------
-	f: callable
-		Derivate function.
-	xk: float
-		Independent variable value at begining of step.
-	yk: float
-		Solution at begining of step.
-	h: float
-		step size.
-	pars: iterable
-		Optional parameters to pass to derivate function.
-	Returns
-	-----------
-	xk1: float
-		Solution at end of Improved Euler step
-	Notes
-	---------
-	Assumes the order of inputs to f is f(y,t,*pars).
-    '''
-    xk1_prediction = xk + h*f(xk,tk,*pars)
-    return xk + (h/2)*(f(xk,tk,*pars) + f(xk1_prediction, tk+h, *pars))
 
 # Pressure ODE
-def dPdt(P, t, b, dP_Mar):
+def dPdt_forecast(P, t, b, dP_Mar):
     '''
     Parameters:
     -----------
@@ -62,7 +37,7 @@ def dPdt(P, t, b, dP_Mar):
     return -b*(P + dP_a/2) -b*(P-dP_a1/2)
 
 # Concentration ODE
-def dCdt(ci, t, P, b1, alpha, bc, tau, dP_Mar):
+def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     '''
     Parameters
     ----------
@@ -111,7 +86,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
 
-def solve_dPdt(f, t, pi, b, dP_Mar):
+def solve_dPdt_forecast(f, t, pi, b, dP_Mar):
     '''
     Parameters:
     -----------
@@ -140,7 +115,7 @@ def solve_dPdt(f, t, pi, b, dP_Mar):
     return P
 
 # Solve concentration ODE
-def solve_dCdt(f,t,P, b1, alpha, bc, tau, dP_Mar):
+def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     '''
     Parameters:
     -----------
@@ -179,7 +154,7 @@ def solve_dCdt(f,t,P, b1, alpha, bc, tau, dP_Mar):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LMP_Model(t, b ,b1, alpha, bc,tau, dP_Mar):
+def LMP_Model_forecast(t, b ,b1, alpha, bc,tau, dP_Mar):
     '''
     Parameters
     ----------
@@ -249,7 +224,7 @@ def model_ensemble(N,t,b,b1,alpha,bc,tau,dP_Mar):
     '''
     C_interp = []
     for i in range(N):
-        C_interp.append(LMP_Model(t, b ,b1, alpha, bc,tau, dP_Mar))
+        C_interp.append(LMP_Model_forecast(t, b ,b1, alpha, bc,tau, dP_Mar))
         
         
 
@@ -273,7 +248,7 @@ tau = 5
 # load in cow data and concentration data
 tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 t = np.arange(1980,2030,step = 0.1)
-pars = curve_fit(LMP_Model,tcon,c,[1,1,1,1,5,1])
+pars = curve_fit(LMP_Model_forecast,tcon,c,[1,1,1,1,5,1])
 print(pars)
 b=pars[0][0]
 b1=pars[0][1]
