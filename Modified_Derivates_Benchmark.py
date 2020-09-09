@@ -1,6 +1,96 @@
 # This script benchmarks the two ODEs formulated in the Modified_Derivates script
 
-from model_functions import *
+from model_functions_posterior import *
+
+# Simplfied pressure ODE
+def dPdt_simplified(P, t, b):
+    '''
+    Parameters:
+    -----------
+    P : float
+        pressure value (dependent variable)
+    t : float
+        time value (independent variable)
+    b : float
+        Recharge strength parameter 
+        
+    Returns:
+    -------
+     dPdt : float
+        rate of change of pressure in aquifer
+    '''
+    
+    dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
+    dP_a1 = 0.1
+
+    return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
+
+# Simplified concentration ODE for no cows
+def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
+    '''
+    Parameters
+    ----------
+    ci : float
+        Concentration of nitrate (dependent variable)
+    t : float
+        time value (independent variable)
+    P : float
+        Current pressure of aquifer
+    b1 : float
+        infliltration parameter
+    alpha : float
+        Active carbon sink infiltration modication parameter
+    bc : float
+        dilution parameter
+    tau : float
+        time lag paramter
+
+    Returns
+    -------
+    dCdt : float
+        rate of change of concentration in aquifer
+    '''
+    dP_a = 0.1 # Pressure difference across aquifer
+    dP_surf = 0.05 # Oversurface pressure
+
+    ni = 0
+             
+    return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
+
+    # Simplified concentration ODE for 100 cows
+def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
+    '''
+    Parameters
+    ----------
+    ci : float
+        Concentration of nitrate (dependent variable)
+    t : float
+        time value (independent variable)
+    P : float
+        Current pressure of aquifer
+    b1 : float
+        infliltration parameter
+    alpha : float
+        Active carbon sink infiltration modication parameter
+    bc : float
+        dilution parameter
+    tau : float
+        time lag paramter
+
+    Returns
+    -------
+    dCdt : float
+        rate of change of concentration in aquifer
+    '''
+    dP_a = 0.1 # Pressure difference across aquifer
+    dP_surf = 0.05 # Oversurface pressure
+
+    ni = 100
+             
+    return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
+
+    
+
 
 # Pressure benchmark without MAR
 if False:
@@ -35,14 +125,14 @@ if False:
     C_Analytical = np.exp((-0.05*t + 99))*0.2
 
     b=0.5
+    ci=0.2
     b1=0.5
     alpha=0
     bc=1
     tau = 0
     
-    #P_numerical = solve_dPdt(dPdt,t,0,[1])
-    #C_Numerical = solve_dCdt(dCdt,t,P_numerical,b1,alpha,bc,tau)
-    C_Numerical = LMP_Model(t,b,b1,alpha,bc,tau)
+    P_numerical = solve_dPdt(dPdt_simplified,t,0,[1])
+    C_Numerical = solve_dCdt(dCdt_simplified,t,P_numerical,ci,b1,alpha,bc,tau)
 
     f,ax = plt.subplots(1,1)
 
@@ -66,13 +156,14 @@ if False:
     C_Analytical = (-499/5)*np.exp((-t+1980)/20) + 100 
 
     b=1
+    ci = 0.2
     b1=1
     alpha=0
     bc=1
     tau = 0
     
-    P_numerical = solve_dPdt(dPdt,t,0,[1])
-    C_Numerical = solve_dCdt(dCdt,t,P_numerical,b1,alpha,bc,tau)
+    P_numerical = solve_dPdt(dPdt_simplified,t,0,[1])
+    C_Numerical = solve_dCdt(dCdt_simplified1,t,P_numerical,ci,b1,alpha,bc,tau)
 
     f,ax = plt.subplots(1,1)
 
