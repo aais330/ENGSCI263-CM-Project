@@ -98,12 +98,18 @@ def dCdt(ci, t, P,b1,alpha, bc, tau):
 
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
-
+    '''
     if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
         ni = 10000
-
+    '''
+    if ((t-tau) <= tn[0]):
+        ni = n[0]
+    elif ((t-tau)>=tn[-1]):
+        ni = n[-1]
+    else:
+        ni = np.interp((t-tau),tn,n)
     
     # Active carbon sink
     if ((t-tau)>t_acs):
@@ -250,7 +256,14 @@ def posterior_pars(sigma):
     # reading data for curve_fit calibration
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
+<<<<<<< HEAD
+=======
+    sigma = [0.1]*len(c0) # variance limit of pars
+
+>>>>>>> 03a74a7435ff09dd665532a808e9ee7033ea88c2
     # calibrating model to data and creating covariance matrix
     p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) 
+
     pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    
     return pos, p

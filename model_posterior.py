@@ -7,7 +7,7 @@ from model_functions_posterior import *
 from sklearn.linear_model import BayesianRidge
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-t = np.arange(1980,2030,step = 0.05)
+t = np.arange(1980,2030,step = 0.25)
 '''
 n_order = 1
 cv, tv = np.array(c0), np.array(t0)
