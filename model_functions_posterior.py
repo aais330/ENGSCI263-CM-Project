@@ -54,7 +54,7 @@ def dPdt(P, t, b):
     
     dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
     dP_a1 = 0.1
-    dP_mar = 0.5
+    dP_mar = 0.05
 
     t_mar = 2030 # Time when MAR begins
 
@@ -97,19 +97,21 @@ def dCdt(ci, t, P,b1,alpha, bc, tau):
     
 
     # number of cows
-    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T #move outside
     '''
     if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
         ni = np.interp((t-tau),tn,n) #interpolating number of cows
     else:
         ni = 10000
-    '''
+   
     if ((t-tau) <= tn[0]):
         ni = n[0]
     elif ((t-tau)>=tn[-1]):
         ni = n[-1]
     else:
-        ni = np.interp((t-tau),tn,n)
+    '''
+    
+    ni = np.interp((t-tau),tn,n)
     
     # Active carbon sink
     if ((t-tau)>t_acs):
@@ -117,12 +119,12 @@ def dCdt(ci, t, P,b1,alpha, bc, tau):
 
     # MAR
     if (t>t_mar):
-        dP_a += 0.5 # Pressure difference increase due to MAR
+        dP_a += 0.05 # Pressure difference increase due to MAR
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
 
-def solve_dPdt(f, t, pi, b):
+def solve_dPdt(f, t, b):
     '''
     Parameters:
     -----------
@@ -141,7 +143,7 @@ def solve_dPdt(f, t, pi, b):
         array of floats containing pressure in aquifer
     '''
     P = np.zeros(t.shape) # intialising pressure vector
-    P[0] = pi 
+    #P[0] = pi 
     dt = t[1] - t[0]
 
     # Solve using Improved Euler Method
@@ -151,7 +153,7 @@ def solve_dPdt(f, t, pi, b):
     return P
 
 # Solve concentration ODE
-def solve_dCdt(f,t,P,ci, b1,alpha, bc, tau):
+def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     '''
     Parameters:
     -----------
@@ -178,8 +180,9 @@ def solve_dCdt(f,t,P,ci, b1,alpha, bc, tau):
     C = np.zeros(t.shape) # intialising concentration array
     #C[0] = 0.2  OLD INTIAL CONCENTRAION (DO NOT DELETE)
     #C[0] = 4.2
-    C[0] = ci
     dt = t[1]-t[0]
+
+    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
     # Solve using improved euler method
     for i in range(len(t)-1):
@@ -194,7 +197,7 @@ def solve_dCdt(f,t,P,ci, b1,alpha, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LPM_Model(t, ci, b, pi ,b1,alpha, bc,tau):
+def LPM_Model(t, b,b1,alpha, bc,tau):
     '''
     Parameters
     ----------
@@ -227,10 +230,10 @@ def LPM_Model(t, ci, b, pi ,b1,alpha, bc,tau):
     tv = np.arange(1980,2030,step = 0.25) # New Time period
       
     # Solve pressure ODE
-    P = solve_dPdt(dPdt,tv,pi,[b])
+    P = solve_dPdt(dPdt,tv,[b])
 
     # Solve concentration ODE 
-    C = solve_dCdt(dCdt,tv,P,ci,b1,alpha,bc,tau)
+    C = solve_dCdt(dCdt,tv,P,b1,alpha,bc,tau)
 
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)
@@ -252,10 +255,11 @@ def posterior_pars():
     # reading data for curve_fit calibration
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
-    sigma = [0.1]*len(c0) # variance limit of pars
+    #sigma = [0.1]*len(c0) # variance limit of pars
+
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) 
+    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0,0),(np.inf,np.inf,1,np.inf,5))) 
 
     pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
     
