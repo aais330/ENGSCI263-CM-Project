@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
-from model_functions import *
+from model_functions_posterior import *
+from model_ensemble_project import *
 
 
 # Tests for concentration model
@@ -9,16 +10,16 @@ from model_functions import *
 # -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 # pars=[P[i],b1,alpha,bc,tau]
 # improved_euler_step(f, tk, xk, h, pars = [])
-b=0.5
-b1=0.5
-alpha=0
-bc=1
-tau = 5
-dP_a = 0.1 
-dP_surf = 0.05 
-t_mar = 2020 
-t_acs = 2010 
-tol=1.e-10
+# b=0.5
+# b1=0.5
+# alpha=0
+# bc=1
+# tau = 5
+# dP_a = 0.1 
+# dP_surf = 0.05 
+# t_mar = 2020 
+# t_acs = 2010 
+tol=1.e-8
 
 def func(x,y,pars=[]):
     pass
@@ -28,64 +29,91 @@ def test_ie():
     pass
 
 def test_dPdt():
-    # t < t_mar
-    check_dPdt = dPdt(10, 2015, 3)
-    assert((check_dPdt+60)<tol)
+    # t < t_mar before t_mar
+    check_dPdt = dPdt(10, 2015)
+    assert((check_dPdt+20)<tol)
     
-    check_dPdt2 = dPdt(15, 2019, 0.2)
-    assert((check_dPdt2+6)<tol)
+    check_dPdt2 = dPdt(15, 2019)
+    assert((check_dPdt2+30)<tol)
     
-    # t > t_mar
-    check_dPdt3 = dPdt(20, 2025, 6)
-    assert((check_dPdt3)+238.5<tol)
+    # t > t_mar after t_mar
+    check_dPdt3 = dPdt_forecast(20, 2025,.5)
+    assert((check_dPdt3)+39.75<tol)
+
+    check_dPdt4 = dPdt_forecast(20, 2020.1,.5)
+    assert((check_dPdt4)+39.75<tol)
 
     # test when switches to tmar on
-    # t < t_mar
-    check_dPdt4 = improved_euler_step(dPdt, 2019, -6, 1, pars=[0.2])
-    assert((check_dPdt4+4.08)<tol) #calculation gave me 11.975, maybe i missed something?
+    # THINK THIS IS TESTING IMPROVED EULER NOT dPdt
+    # # t < t_mar
+    # check_dPdt4 = improved_euler_step(dPdt, 2019, -6, 1, pars=[0.2])
+    # assert((check_dPdt4+4.08)<tol) #calculation gave me 11.975, maybe i missed something?
 
-    check_dPdt5 = improved_euler_step(dPdt, 1998, 6, 0.2, pars=[0.2])
-    assert((check_dPdt5-5.54)<tol) # Keep getting 5.54 even though the year changes
+    # check_dPdt5 = improved_euler_step(dPdt, 1998, 6, 0.2, pars=[0.2])
+    # assert((check_dPdt5-5.54)<tol) # Keep getting 5.54 even though the year changes
 
-    # t > t_mar
-    check_dPdt6 = improved_euler_step(dPdt, 2021, 6, 0.2, pars=[0.2])
-    assert((check_dPdt6-5.55)<tol)
+    # # t > t_mar
+    # check_dPdt6 = improved_euler_step(dPdt, 2021, 6, 0.2, pars=[0.2])
+    # assert((check_dPdt6-5.55)<tol)
+
 
     print("dPdt passed \n")
 
+
+# dCdt(ci, t, P, b1, alpha, bc, tau):
+
 def test_dCdt():
-    # t-tau >= 1990.5
-    check_dCdt = dCdt(20, 2005, 0.4, 1, 2, 1, 3) 
-    assert((check_dCdt+117480.18)<tol)
+
+    # between 1990.5 and before active carbon sink and no time lag
+    check_dCdt = dCdt(50, 1999.5, 0, 1, 1, 1, 0) 
+    assert((check_dCdt-11645.8)<tol)
+
+    # between 1990.5 and before active carbon sink and time lag
+    check_dCdt = dCdt(50, 2000.5, 0, 1, 1, 1, 1) 
+    assert((check_dCdt-11645.8)<tol)
     
-    # t-tau >= 1990.5 and t-tau>t_acs
-    check_dCdt2 = dCdt(25, 2016, 0.2, 1, 2, 1, 5) 
-    assert((check_dCdt2-212666)<tol)
+    # After active carbon sink no time lag
+    check_dCdt = dCdt(50, 2010.5, 0, 1, 0.5, 1, 0) 
+    assert((check_dCdt-14977.45)<tol)
 
-    # t-tau < 1990.5
-    check_dCdt3 = dCdt(25, 1992, 0.2, 1, 2, 1, 3) 
-    assert((check_dCdt3+2996.25)<tol)
+    # After active carbon sink with time lag
+    check_dCdt = dCdt(50, 2011.5, 0, 1, 0.5, 1, 1) 
+    assert((check_dCdt-14977.45)<tol)
 
-    # t>t_mar and t-tau >= 1990.5 and t-tau>t_acs
-    check_dCdt4 = dCdt(25, 2021, 0.2, 1, 2, 1, 3)
-    assert((check_dCdt4+200948.05)<tol)
+    # before 1990.5
+    check_dCdt = dCdt(50,1985,0, 1, 1, 1, 0) 
+    assert((check_dCdt-1886.1)<tol)
 
-    # Tests when t-tau > 1990.5 
-    # Test when t-tau>t_acs 2015>2010
-    check_dCdt5=improved_euler_step(dCdt,2020,0.2,1,pars=[0,b1,alpha,bc,tau])
-    assert((check_dCdt5-0.1665)<tol)
+    # after 2020 without mar, with active carbon sink
+    check_dCdt = dCdt(50,2021,0, 1, 0.5, 1, 0) 
+    assert((check_dCdt-15903.525)<tol)
 
-    # Test when t-tau<t_acs 2009<2010
-    check_dCdt6=improved_euler_step(dCdt,2014,0.2,1,pars=[0,b1,alpha,bc,tau])
-    assert((check_dCdt6-13870.7)<tol)
+    # after 2020 without mar, without active carbon sink
+    check_dCdt = dCdt(50,2021,0, 1, 1, 1, 0) 
+    assert((check_dCdt-31809.55)<tol)
 
-    # Test when t>t_mar
-    check_dCdt7=improved_euler_step(dCdt,2021,0.2,1,pars=[0,b1,alpha,bc,tau]) 
-    assert((check_dCdt7-0.149)<tol) 
 
-    # Test when t<t_mar
-    check_dCdt8=improved_euler_step(dCdt,2018,0.2,1,pars=[0,b1,alpha,bc,tau])
-    assert((check_dCdt8-0.1903)<tol)
+    # after 2020 with mar, with active carbon sink
+    check_dCdt = dCdt_forecast(50,2021,0, 1, 0.5, 1, 0,0.5) 
+    assert((check_dCdt-15916.025)<tol)
+
+    # Testing Improved euler not dCdt
+    # # Tests when t-tau > 1990.5 
+    # # Test when t-tau>t_acs 2015>2010
+    # check_dCdt5=improved_euler_step(dCdt,2020,0.2,1,pars=[0,b1,alpha,bc,tau])
+    # assert((check_dCdt5-0.1665)<tol)
+
+    # # Test when t-tau<t_acs 2009<2010
+    # check_dCdt6=improved_euler_step(dCdt,2014,0.2,1,pars=[0,b1,alpha,bc,tau])
+    # assert((check_dCdt6-13870.7)<tol)
+
+    # # Test when t>t_mar
+    # check_dCdt7=improved_euler_step(dCdt,2021,0.2,1,pars=[0,b1,alpha,bc,tau]) 
+    # assert((check_dCdt7-0.149)<tol) 
+
+    # # Test when t<t_mar
+    # check_dCdt8=improved_euler_step(dCdt,2018,0.2,1,pars=[0,b1,alpha,bc,tau])
+    # assert((check_dCdt8-0.1903)<tol)
 
     print("dCdt passed \n")
 
