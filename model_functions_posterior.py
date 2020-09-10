@@ -35,7 +35,7 @@ def improved_euler_step(f, tk, xk, h, pars = []):
     return xk + (h/2)*(f(xk,tk,*pars) + f(xk1_prediction, tk+h, *pars))
 
 # Pressure ODE
-def dPdt(P, t, b):
+def dPdt(P, t):
     '''
     Parameters:
     -----------
@@ -63,10 +63,10 @@ def dPdt(P, t, b):
 
 
         
-    return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
+    return -1*(P + dP_a/2) -1*(P-(dP_a1)/2) 
 
 # Concentration ODE
-def dCdt(ci, t, P,b1,alpha, bc, tau):
+def dCdt(ci, t, P, b1, alpha, bc, tau):
     '''
     Parameters
     ----------
@@ -124,7 +124,7 @@ def dCdt(ci, t, P,b1,alpha, bc, tau):
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
 
-def solve_dPdt(f, t, b):
+def solve_dPdt(f, t):
     '''
     Parameters:
     -----------
@@ -148,7 +148,7 @@ def solve_dPdt(f, t, b):
 
     # Solve using Improved Euler Method
     for i in range(len(t)-1):
-        P[i+1] = improved_euler_step(f,t[i],P[i],dt,b)
+        P[i+1] = improved_euler_step(f,t[i],P[i],dt)
         
     return P
 
@@ -182,7 +182,7 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     #C[0] = 4.2
     dt = t[1]-t[0]
 
-    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+    #tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
     # Solve using improved euler method
     for i in range(len(t)-1):
@@ -197,7 +197,7 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LPM_Model(t, b,b1,alpha, bc,tau):
+def LPM_Model(t, b1, alpha, bc, tau):
     '''
     Parameters
     ----------
@@ -230,7 +230,7 @@ def LPM_Model(t, b,b1,alpha, bc,tau):
     tv = np.arange(1980,2030,step = 0.25) # New Time period
       
     # Solve pressure ODE
-    P = solve_dPdt(dPdt,tv,[b])
+    P = solve_dPdt(dPdt,tv)
 
     # Solve concentration ODE 
     C = solve_dCdt(dCdt,tv,P,b1,alpha,bc,tau)
@@ -239,7 +239,7 @@ def LPM_Model(t, b,b1,alpha, bc,tau):
     C_interp = np.interp(t,tv,C)
     return C_interp
 
-def posterior_pars(sigma):
+def posterior_pars():
     '''
     Parameter
     ---------
@@ -262,11 +262,12 @@ def posterior_pars(sigma):
     #sigma = [0.1]*len(c0) # variance limit of pars
 
 
-    sigma = [0.1]*len(c0) # variance limit of pars
+    #sigma = [0.1]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0,0),(np.inf,np.inf,1,np.inf,5))) 
+    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,np.inf,4.6))) 
 
-    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    #pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    pos=0
     
     return pos, p
