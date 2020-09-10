@@ -7,10 +7,23 @@ from model_functions_posterior import *
 from sklearn.linear_model import BayesianRidge
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-t = np.arange(1980,2030,step = 0.1)
-
+t = np.arange(1980,2030,step = 0.25)
 ps, p = posterior_pars()
 print(p)
+
+'''
+n_order = 1
+cv, tv = np.array(c0), np.array(t0)
+Tv = np.vander(tv, n_order+1, increasing=True)
+
+br = BayesianRidge(fit_intercept=False, tol=1e-5)
+br.fit(Tv, cv)
+
+T0 = np.vander(t, n_order+1, increasing=True)
+c, c_var = br.predict(T0, return_std=True)
+'''
+sigma = [1.e-14]*len(c0) # variance limit of pars
+ps, p = posterior_pars(sigma)
 v=0.3
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
