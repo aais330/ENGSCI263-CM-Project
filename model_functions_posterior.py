@@ -251,10 +251,10 @@ def posterior_pars():
     #sigma = [0.1]*len(c0) # variance limit of pars
 
 
-    #sigma = [0.1]*len(c0) # variance limit of pars
+    sigma = [1.e-20]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,3,4.75))) 
+    p, cov = curve_fit(LPM_Model,t0,c0,sigma=sigma,bounds=((0,0,0,0),(np.inf,1,3,4.75))) 
 
     pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
     # pos=0
