@@ -3,6 +3,7 @@ from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from model_functions_posterior import *
 
+tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
 # Pressure ODE
 def dPdt_forecast(P, t, dP_Mar):
@@ -65,7 +66,7 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
 
 
     # number of cows
-    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+    #tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
     
     ni = np.interp((t-tau),tn,n) #interpolating number of cows
   
@@ -197,41 +198,41 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
 
 # Testing curve_fit
 # load in cow data and concentration data
-tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-t = np.arange(1980,2030,step = 0.1)
-'''
-pars = curve_fit(LPM_Model_forecast,tcon,c,[0.2,0.5,0.5,1,1,5])
-print(pars)
-b=pars[0][0]
-b1=pars[0][1]
-alpha=pars[0][2]
-bc=pars[0][3]
-'''
-tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-#ci = c[0]
+# tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
+# t = np.arange(1980,2030,step = 0.1)
+# '''
+# pars = curve_fit(LPM_Model_forecast,tcon,c,[0.2,0.5,0.5,1,1,5])
+# print(pars)
+# b=pars[0][0]
+# b1=pars[0][1]
+# alpha=pars[0][2]
+# bc=pars[0][3]
+# '''
+# tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
+# #ci = c[0]
 
-dP_Mar = 0.01
+# dP_Mar = 0.01
 
-#pos, p = posterior_pars()
-p = [2.95386009e-04,4.19170875e-01,1.11022030e+01,4.05308344e+00]
-#print(p)
+# #pos, p = posterior_pars()
+# p = [2.95386009e-04,4.19170875e-01,1.11022030e+01,4.05308344e+00]
+# #print(p)
 
-b1 = p[0]
-alpha = p[1]
-bc = p[2]
-tau = p[3]
-
-
-v=0.3
-
-C_Out = LPM_Model_forecast(t,b1,alpha, bc,tau,0.05) #, dP_Mar
-
-C_Out2 = LPM_Model(t,b1,alpha, bc,tau)
-
-fig = plt.figure(figsize=(10,6))
-ax = fig.add_subplot(111)
-ax.plot(t, C_Out, 'b-', label='best-fit')
+# b1 = p[0]
+# alpha = p[1]
+# bc = p[2]
+# tau = p[3]
 
 
-#ax.errorbar(tcon,c,yerr=v,fmt='ro', label='data', markersize=2.2)
-plt.show()
+# v=0.3
+
+# C_Out = LPM_Model_forecast(t,b1,alpha, bc,tau,0.05) #, dP_Mar
+
+# C_Out2 = LPM_Model(t,b1,alpha, bc,tau)
+
+# fig = plt.figure(figsize=(10,6))
+# ax = fig.add_subplot(111)
+# ax.plot(t, C_Out, 'b-', label='best-fit')
+
+
+# #ax.errorbar(tcon,c,yerr=v,fmt='ro', label='data', markersize=2.2)
+# plt.show()

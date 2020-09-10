@@ -4,6 +4,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 
+tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
 def improved_euler_step(f, tk, xk, h, pars = []): 
 
@@ -54,7 +55,7 @@ def dPdt(P, t):
     
     dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
     dP_a1 = 0.1
-    dP_mar = 0.05
+    dP_mar = 0.0
 
     t_mar = 2030 # Time when MAR begins
 
@@ -97,7 +98,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     
 
     # number of cows
-    tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T #move outside
+     #move outside
     
     ni = np.interp((t-tau),tn,n)
     
@@ -107,7 +108,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
 
     # MAR
     if (t>t_mar):
-        dP_a += 0.05 # Pressure difference increase due to MAR
+        dP_a += 0.0 # Pressure difference increase due to MAR
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
@@ -253,7 +254,7 @@ def posterior_pars():
     #sigma = [0.1]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,2.5,4.25))) 
+    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,3,4.75))) 
 
     #pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
     pos=0
