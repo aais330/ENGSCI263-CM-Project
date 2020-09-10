@@ -230,8 +230,12 @@ def LPM_Model(t, ci, b, pi ,b1,alpha, bc,tau):
     C_interp = np.interp(t,tv,C)
     return C_interp
 
-def posterior_pars():
+def posterior_pars(sigma):
     '''
+    Parameter
+    ---------
+    sigma : array
+        Variance limit of pars
     Returns
     -------
     pos : ndarray
@@ -245,8 +249,6 @@ def posterior_pars():
     '''
     # reading data for curve_fit calibration
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-
-    sigma = [1.e-14]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
     p, cov = curve_fit(LPM_Model,t0,c0, sigma=sigma) 

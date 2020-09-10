@@ -19,8 +19,8 @@ br.fit(Tv, cv)
 T0 = np.vander(t, n_order+1, increasing=True)
 c, c_var = br.predict(T0, return_std=True)
 '''
-
-ps, p = posterior_pars()
+sigma = [1.e-14]*len(c0) # variance limit of pars
+ps, p = posterior_pars(sigma)
 v=0.3
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
