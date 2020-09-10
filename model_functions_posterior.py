@@ -256,7 +256,7 @@ def posterior_pars():
     # calibrating model to data and creating covariance matrix
     p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,3,4.75))) 
 
-    #pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
-    pos=0
+    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    # pos=0
     
     return pos, p
