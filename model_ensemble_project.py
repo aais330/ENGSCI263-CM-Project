@@ -5,7 +5,7 @@ from model_functions_posterior import *
 
 
 # Pressure ODE
-def dPdt_forecast(P, t, b, dP_Mar):
+def dPdt_forecast(P, t, dP_Mar):
     '''
     Parameters:
     -----------
@@ -25,8 +25,6 @@ def dPdt_forecast(P, t, b, dP_Mar):
     dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
     dP_a1 = 0.1
     
-
-    
     t_mar = 2020 # Time when MAR begins
 
     if (t>=t_mar): # FIX THIS IF ELSE STATEMENT
@@ -34,7 +32,7 @@ def dPdt_forecast(P, t, b, dP_Mar):
 
 
         
-    return -b*(P + dP_a/2) -b*(P-dP_a1/2)
+    return -1*(P + dP_a/2) -1*(P-dP_a1/2)
 
 # Concentration ODE
 def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
@@ -69,10 +67,8 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
     
-    if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
-        ni = np.interp((t-tau),tn,n) #interpolating number of cows
-    else:
-        ni = 10000
+    ni = np.interp((t-tau),tn,n) #interpolating number of cows
+  
     
     
     # Active carbon sink
@@ -86,7 +82,7 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
 
-def solve_dPdt_forecast(f, t, pi, b, dP_Mar):
+def solve_dPdt_forecast(f, t, dP_Mar):
     '''
     Parameters:
     -----------
@@ -105,17 +101,16 @@ def solve_dPdt_forecast(f, t, pi, b, dP_Mar):
         array of floats containing pressure in aquifer
     '''
     P = np.zeros(t.shape) # intialising pressure vector
-    P[0] = pi 
     dt = t[1] - t[0]
 
     # Solve using Improved Euler Method
     for i in range(len(t)-1):
-        P[i+1] = improved_euler_step(f,t[i],P[i],dt,[b, dP_Mar])
+        P[i+1] = improved_euler_step(f,t[i],P[i],dt,[dP_Mar])
         
     return P
 
 # Solve concentration ODE
-def solve_dCdt_forecast(f,t,P,ci, b1, alpha, bc, tau, dP_Mar):
+def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     '''
     Parameters:
     -----------
@@ -139,7 +134,6 @@ def solve_dCdt_forecast(f,t,P,ci, b1, alpha, bc, tau, dP_Mar):
         An array of concentrations
     '''
     C = np.zeros(t.shape) # intialising concentration array
-    C[0] = ci
     dt = t[1]-t[0]
 
     # Solve using improved euler method
@@ -154,7 +148,7 @@ def solve_dCdt_forecast(f,t,P,ci, b1, alpha, bc, tau, dP_Mar):
 LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
 '''
 
-def LPM_Model_forecast(t, ci, b, pi ,b1,alpha, bc,tau, dP_Mar):
+def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     '''
     Parameters
     ----------
@@ -167,7 +161,7 @@ def LPM_Model_forecast(t, ci, b, pi ,b1,alpha, bc,tau, dP_Mar):
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
-            dilution parameter
+        dilution parameter
     tau : float
         time lag
     dP_Mar: float
@@ -190,10 +184,10 @@ def LPM_Model_forecast(t, ci, b, pi ,b1,alpha, bc,tau, dP_Mar):
     #sd_dP_Mar = 0.2*dP_Mar
     #dP_Mar = sd_dP_Mar * np.random.randn() + mean_dP_Mar
 
-    P = solve_dPdt_forecast(dPdt_forecast,tv,pi,b, dP_Mar)
+    P = solve_dPdt_forecast(dPdt_forecast,tv,dP_Mar)
 
     # Solve concentration ODE 
-    C = solve_dCdt_forecast(dCdt_forecast,tv,P,ci,b1,alpha,bc,tau, dP_Mar)
+    C = solve_dCdt_forecast(dCdt_forecast,tv,P,b1,alpha,bc,tau, dP_Mar)
 
     # INTERPOLATE to T (from Tcon)
     C_interp = np.interp(t,tv,C)
@@ -221,22 +215,17 @@ tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 dP_Mar = 0.01
 
 pos, p = posterior_pars()
-print(2)
-ci = p[0]
-b = p[1]
-pi = p[2]
-b1 = p[3]
-alpha = p[4]
-bc = p[5]
-tau = p[6]
+print(p)
+
+b1 = p[0]
+alpha = p[1]
+bc = p[2]
+tau = p[3]
 
 
 v=0.3
 
-
-
-
-C_Out = LPM_Model_forecast(t,ci,b,pi,b1,alpha, bc,tau, dP_Mar)
+C_Out = LPM_Model_forecast(t,b1,alpha, bc,tau,0.05) #, dP_Mar
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
 ax.plot(t, C_Out, 'b-', label='best-fit')

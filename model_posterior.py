@@ -5,6 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from model_functions_posterior import *
 from sklearn.linear_model import BayesianRidge
+import cProfile, pstats
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 t = np.arange(1980,2030,step = 0.1)
@@ -23,7 +24,13 @@ T0 = np.vander(t, n_order+1, increasing=True)
 c, c_var = br.predict(T0, return_std=True)
 '''
 sigma = [1.e-14]*len(c0) # variance limit of pars
-ps, p = posterior_pars()
+
+#ps, p = posterior_pars()
+
+#cProfile.run('ps, p = posterior_pars()','restats')
+#p = pstats.Stats('restats')
+#p.sort_stats('time').print_stats(5)
+
 v=0.3
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
@@ -37,8 +44,8 @@ ax.plot(t, LPM_Model(t, *p), 'b-', label='best-fit')
 ax.plot([], [], lw=0.5, label='posterior samples')
 ax.set_ylim(0,16)
 ax.legend()
-#plt.show()
-plt.savefig("posterior.png")
+plt.show()
+#plt.savefig("posterior.png")
 
 
 
