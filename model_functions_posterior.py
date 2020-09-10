@@ -98,18 +98,6 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
 
     # number of cows
     tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T #move outside
-    '''
-    if ((t-tau) >= 1990.5): # THINK ABOUT THIS!
-        ni = np.interp((t-tau),tn,n) #interpolating number of cows
-    else:
-        ni = 10000
-   
-    if ((t-tau) <= tn[0]):
-        ni = n[0]
-    elif ((t-tau)>=tn[-1]):
-        ni = n[-1]
-    else:
-    '''
     
     ni = np.interp((t-tau),tn,n)
     
@@ -265,7 +253,7 @@ def posterior_pars():
     #sigma = [0.1]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,np.inf,4.25))) 
+    p, cov = curve_fit(LPM_Model,t0,c0,bounds=((0,0,0,0),(np.inf,1,2.5,4.25))) 
 
     #pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
     pos=0

@@ -69,8 +69,6 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     
     ni = np.interp((t-tau),tn,n) #interpolating number of cows
   
-    
-    
     # Active carbon sink
     if ((t-tau)>t_acs):
         b1 = alpha*b1
@@ -139,7 +137,7 @@ def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     # Solve using improved euler method
     for i in range(len(t)-1):
         pars = [P[i],b1,alpha,bc,tau, dP_Mar]
-        output = improved_euler_step(f,C[i],t[i],dt,pars)
+        output = improved_euler_step(f,t[i],C[i],dt,pars)
         C[i+1] = output
 
     return C
@@ -178,7 +176,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     
     
     #Define tv
-    tv = np.arange(1980,2030,step = 0.25)
+    tv = np.arange(1980,2030,step = 0.1)
     
     #mean_dP_Mar = dP_Mar
     #sd_dP_Mar = 0.2*dP_Mar
@@ -200,7 +198,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
 # Testing curve_fit
 # load in cow data and concentration data
 tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-t = np.arange(1980,2030,step = 0.25)
+t = np.arange(1980,2030,step = 0.1)
 '''
 pars = curve_fit(LPM_Model_forecast,tcon,c,[0.2,0.5,0.5,1,1,5])
 print(pars)
@@ -214,8 +212,9 @@ tcon, c = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
 dP_Mar = 0.01
 
-pos, p = posterior_pars()
-print(p)
+#pos, p = posterior_pars()
+p = [2.95386009e-04,4.19170875e-01,1.11022030e+01,4.05308344e+00]
+#print(p)
 
 b1 = p[0]
 alpha = p[1]
@@ -226,9 +225,13 @@ tau = p[3]
 v=0.3
 
 C_Out = LPM_Model_forecast(t,b1,alpha, bc,tau,0.05) #, dP_Mar
+
+C_Out2 = LPM_Model(t,b1,alpha, bc,tau)
+
 fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
 ax.plot(t, C_Out, 'b-', label='best-fit')
+
 
 #ax.errorbar(tcon,c,yerr=v,fmt='ro', label='data', markersize=2.2)
 plt.show()
