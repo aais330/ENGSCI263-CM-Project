@@ -36,4 +36,4 @@ plt.title('Annual Cattle Numbers in Southland and Nitrate Concentrations of Eden
 lines = cows + n_conc
 labels = [l.get_label() for l in lines]
 ax.legend(lines, labels,loc = 0)
-fig.savefig('nitrate_conc_vs_cows.png', dpi = 200)
+fig.savefig('nc_data.png', dpi = 200)
