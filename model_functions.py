@@ -183,9 +183,6 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     return C
 
 
-'''
-LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
-'''
 
 def LPM_Model(t, b1, alpha, bc, tau):
     '''
@@ -229,6 +226,39 @@ def LPM_Model(t, b1, alpha, bc, tau):
     C_interp = np.interp(t,tv,C)
     return C_interp
 
+def posterior_pars_old():
+    '''
+    Parameter
+    ---------
+    sigma : array
+        Variance limit of pars
+    Returns
+    -------
+    pos : ndarray
+        Array of shape (N,) containing spread of parameter values
+    p : array
+        Optimal values of the parameters with minimal variance from data
+    
+    Notes
+    -----
+    Utilises other functions in the same file and requires no inputs
+    '''
+    # reading data for curve_fit calibration
+    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
+
+    #sigma = [0.1]*len(c0) # variance limit of pars
+
+
+    #sigma = [0.001]*len(c0) # variance limit of pars
+
+    # calibrating model to data and creating covariance matrix
+    p, cov = curve_fit(LPM_Model,t0,c0) 
+    cov = 0.04*cov
+    pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
+    # pos=0
+    
+    return pos, p   
+
 def posterior_pars():
     '''
     Parameter
@@ -255,7 +285,8 @@ def posterior_pars():
     #sigma = [0.001]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0, bounds=((8e-05,0.25,0,0),(1e-04,0.35,np.inf,np.inf))) 
+    p, cov = curve_fit(LPM_Model,t0,c0, bounds=((0,0,0,0.5),(1e-04,np.inf,np.inf,np.inf))) 
+    
     cov = 0.04*cov
     pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
     # pos=0
@@ -400,9 +431,6 @@ def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
 
     return C
 
-'''
-LPM_Model is a single function that solves the LPM for nitrate concentration in the aquifer
-'''
 
 def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     '''
@@ -435,10 +463,6 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     
     #Define tv
     tv = np.arange(1980,2030,step = 0.1)
-    
-    #mean_dP_Mar = dP_Mar
-    #sd_dP_Mar = 0.2*dP_Mar
-    #dP_Mar = sd_dP_Mar * np.random.randn() + mean_dP_Mar
 
     P = solve_dPdt_forecast(dPdt_forecast,tv,dP_Mar)
 

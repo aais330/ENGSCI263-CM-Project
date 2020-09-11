@@ -3,7 +3,7 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-from model_functions_posterior import *
+from model_functions import *
 import cProfile, pstats
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
@@ -26,21 +26,6 @@ fig = plt.figure(figsize=(10,6))
 ax = fig.add_subplot(111)
 #ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
 
-
-#ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
-
-#posterior plotting
-# for i in np.linspace(0,0.005,10):
-#     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, i), 'm-', lw=0.5)
-
-# for i in np.linspace(0.007,0.013,10):
-#     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, i), 'g-', lw=0.5)
-
-# for i in np.linspace(0.04,0.06,10):
-#     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, i), 'b-', lw=0.5)
-
-# for i in np.linspace(0.09,0.11,10):
-#     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, i), 'r-', lw=0.5)
 
 for pi in range(0,ps.shape[0]):
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
@@ -68,5 +53,5 @@ ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.05 MPa')
 ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.1 MPa')
 ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.15 MPa')
 ax.legend(loc=2)
-#plt.show()
-plt.savefig("scenario_forecasts.png")
+plt.show()
+#plt.savefig("scenario_forecasts.png")

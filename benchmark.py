@@ -1,6 +1,6 @@
 # This script benchmarks the two ODEs formulated in the Modified_Derivates script
 
-from model_functions_posterior import *
+from model_functions import *
 
 # Simplfied pressure ODE
 def dPdt_simplified(P, t):
@@ -57,8 +57,7 @@ def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
-  
-    # Simplified concentration ODE for 100 cows
+# Simplified concentration ODE for 100 cows
 def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
     '''
     Parameters
@@ -94,7 +93,7 @@ def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
 
 
 # Pressure benchmark without MAR
-if False:
+def pressure_benchmark():
     # Analytical Solution
     t = np.arange(1980,2020,0.5)
     P_analytical = np.zeros(t.shape)
@@ -119,14 +118,11 @@ if False:
     plt.show()
 
 # Concentration benchmark with negative 100 cows
-# NOTE: to run this test you must go into the concentration derivative function (dCdt) and 
-# set the number of cows to 0.
-if True:    
+def concentration_benchmark1():    
     t = np.arange(1980,2020,0.5)
     C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100            # FIX THIS
 
-    b=0.5
-    ci=0.2
+    
     b1=0.5
     alpha=0
     bc=0.5
@@ -150,14 +146,11 @@ if True:
     plt.show()
 
 # Constant number of cows (100)
-# NOTE: to run this test you must go into the concentration derivative function (dCdt) and 
-# set the number of cows to 100
-if False:
+def concentration_benchmark2(): 
     t = np.arange(1980,2020,0.5)
     C_Analytical = (-499/5)*np.exp((-t+1980)/20) + 100 
 
-    b=1
-    ci = 0.2
+    
     b1=1
     alpha=0
     bc=1

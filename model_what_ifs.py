@@ -3,8 +3,7 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-from model_functions_posterior import *
-import cProfile, pstats
+from model_functions import *
 
 t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 t = np.arange(1980,2020,step = 0.1)

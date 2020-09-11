@@ -99,17 +99,33 @@ def test_dCdt():
     print("dCdt passed \n")
 
 # convergence testing solutions for different step sizes
-def convergence_sols(step_sizes, pars=[]):
+def convergence_analysis():
+    '''
+    Convergence analysis for our model
+    '''
+
     # pre-allocating solutions array
     sols = []
+    step_sizes = np.arange(0.1, 1, 0.1)
+
+    pos, pars = posterior_pars()
 
     for step in 1/step_sizes:
         # time range with step size
         t = np.arange(1998, 2020, step)
 
-        C = LPM_Model(t, pars[0], pars[1], pars[2], pars[3])
+        C = LPM_Model(t, *pars)
         C = np.interp(2012, t, C)
         # add concentration solution at each step size to array
         sols.append(C)
     
-    return sols 
+
+    fig2 = plt.figure()
+    ax2 = fig2.add_subplot(111)
+    ax2.plot(step_sizes, sols, 'mo--', label = 'Nitrate concentration in 2012')
+    ax2.legend() 
+    ax2.set_title('Convergence of nitrate concentration step sizes')
+    ax2.set_xlabel('Step size (1/h)')
+    ax2.set_ylabel('Nitrate Concentration in 2012')
+    #plt.show()
+    fig2.savefig('convergence.png')
