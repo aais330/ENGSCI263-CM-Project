@@ -3,7 +3,7 @@
 from model_functions_posterior import *
 
 # Simplfied pressure ODE
-def dPdt_simplified(P, t, b):
+def dPdt_simplified(P, t):
     '''
     Parameters:
     -----------
@@ -23,9 +23,9 @@ def dPdt_simplified(P, t, b):
     dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
     dP_a1 = 0.1
 
-    return -b*(P + dP_a/2) -b*(P-(dP_a1)/2) 
+    return -1*(P + dP_a/2) -1*(P-(dP_a1)/2) 
 
-# Simplified concentration ODE for no cows
+# Simplified concentration ODE for -100 cows
 def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
     '''
     Parameters
@@ -53,10 +53,11 @@ def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
     dP_a = 0.1 # Pressure difference across aquifer
     dP_surf = 0.05 # Oversurface pressure
 
-    ni = 0
+    ni = -100
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
+  
     # Simplified concentration ODE for 100 cows
 def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
     '''
@@ -99,7 +100,7 @@ if False:
     P_analytical = np.zeros(t.shape)
 
     # Numerical Solution
-    P_numerical = solve_dPdt(dPdt,t,0,[1])
+    P_numerical = solve_dPdt(dPdt_simplified,t)
 
     f,ax = plt.subplots(1,1)
 
@@ -117,29 +118,29 @@ if False:
 
     plt.show()
 
-# Concentration benchmark with no cows
+# Concentration benchmark with negative 100 cows
 # NOTE: to run this test you must go into the concentration derivative function (dCdt) and 
 # set the number of cows to 0.
-if False:    
+if True:    
     t = np.arange(1980,2020,0.5)
-    C_Analytical = np.exp((-0.05*t + 99))*0.2
+    C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100            # FIX THIS
 
     b=0.5
     ci=0.2
     b1=0.5
     alpha=0
-    bc=1
+    bc=0.5
     tau = 0
     
-    P_numerical = solve_dPdt(dPdt_simplified,t,0,[1])
-    C_Numerical = solve_dCdt(dCdt_simplified,t,P_numerical,ci,b1,alpha,bc,tau)
+    P_numerical = solve_dPdt(dPdt_simplified,t)
+    C_Numerical = solve_dCdt(dCdt_simplified,t,P_numerical,b1,alpha,bc,tau)
 
     f,ax = plt.subplots(1,1)
 
     ax.plot(t,C_Analytical,'b', label = 'Analytical Solution')
     ax.plot(t,C_Numerical,'r+', label = 'Numeric Solution')
 
-    ax.set_title('Analytical vs Numeric solution (no cows)')
+    ax.set_title('Analytical vs Numeric solution (negative 100 cows)')
     plt.ylabel('Concentration')
     plt.xlabel('Time')
 
@@ -162,8 +163,8 @@ if False:
     bc=1
     tau = 0
     
-    P_numerical = solve_dPdt(dPdt_simplified,t,0,[1])
-    C_Numerical = solve_dCdt(dCdt_simplified1,t,P_numerical,ci,b1,alpha,bc,tau)
+    P_numerical = solve_dPdt(dPdt_simplified,t)
+    C_Numerical = solve_dCdt(dCdt_simplified1,t,P_numerical,b1,alpha,bc,tau)
 
     f,ax = plt.subplots(1,1)
 
