@@ -34,7 +34,7 @@ ax.legend()
 fig1.savefig('nc_data.png', dpi = 200)
 
 # unit tests
-test_ie()
+test_ie() 
 test_dPdt()
 test_dCdt()
 
