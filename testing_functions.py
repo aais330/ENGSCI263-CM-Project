@@ -1,24 +1,5 @@
 import numpy as np
-from scipy.optimize import curve_fit
-from matplotlib import pyplot as plt
-from model_functions_posterior import *
-from model_ensemble_project import *
-
-
-# Tests for concentration model
-# dCdt(ci, t, P, b1, alpha, bc, tau)
-# -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
-# pars=[P[i],b1,alpha,bc,tau]
-# improved_euler_step(f, tk, xk, h, pars = [])
-# b=0.5
-# b1=0.5
-# alpha=0
-# bc=1
-# tau = 5
-# dP_a = 0.1 
-# dP_surf = 0.05 
-# t_mar = 2020 
-# t_acs = 2010 
+from model_functions import *
 tol=1.e-8
 
 def func(x,y,pars=[]):
@@ -117,5 +98,18 @@ def test_dCdt():
 
     print("dCdt passed \n")
 
-test_dPdt()
-test_dCdt()
+# convergence testing solutions for different step sizes
+def convergence_sols(step_sizes, pars=[]):
+    # pre-allocating solutions array
+    sols = []
+
+    for step in 1/step_sizes:
+        # time range with step size
+        t = np.arange(1998, 2020, step)
+
+        C = LPM_Model(t, pars[0], pars[1], pars[2], pars[3])
+        C = np.interp(2012, t, C)
+        # add concentration solution at each step size to array
+        sols.append(C)
+    
+    return sols 

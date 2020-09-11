@@ -1,4 +1,4 @@
-from model_functions_posterior import *
+from model_functions import *
 
 # Set parameters of the models
 pos, p = posterior_pars()
