@@ -131,8 +131,9 @@ def without_acs():
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
 
-    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast best-fit', alpha=0.5)
-    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='without ACS ', alpha=0.5)
+    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS', alpha=0.5)
+    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS ', alpha=0.5)
+    ax.legend(loc=2)
     #plt.show()
     fig.savefig('without_acs.png', dpi = 200)
 
@@ -211,7 +212,9 @@ def without_acs_uncertainty():
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
-
+    ax.plot([],[], 'k-', label = 'With ACS')
+    ax.plot([],[], 'g-', label = 'Without ACS')
+    ax.legend()
     #ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast best-fit', alpha=0.5)
     #ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='without ACS ', alpha=0.5)
     #plt.show()

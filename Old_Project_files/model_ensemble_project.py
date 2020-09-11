@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
-from model_functions_posterior import *
+from model_functions import *
 
 tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
