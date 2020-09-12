@@ -6,6 +6,10 @@ from testing_functions import *
 def plot_data():
     '''
     Plots the given nitrate concentration and cow data
+
+    Notes
+    ------
+    Saves the plot in file 'nc_data.png'
     '''
 
     # reading in cow data
@@ -33,8 +37,16 @@ def plot_data():
     #plt.show()
     fig1.savefig('nc_data.png', dpi = 200)
 
+
 def initial_model():
-    pos, p = posterior_pars_old()
+    '''
+    Plots the intial concentration model
+
+    Notes
+    ------
+    Saves the plot in file 'initial_model.png'
+    '''
+    p = posterior_pars_old()
     t = np.arange(1980,2030,step=0.05)
     C = LPM_Model(t,*p)
 
@@ -49,6 +61,13 @@ def initial_model():
     fig.savefig('initial_model.png', dpi = 200)
 
 def improved_model():
+    '''
+    Plots the improved concentration model
+
+    Notes
+    ------
+    Saves the plot in file 'improved_model.png'
+    '''
     pos, p = posterior_pars()
     t = np.arange(1980,2030,step=0.05)
     C = LPM_Model(t,*p)
@@ -63,7 +82,15 @@ def improved_model():
     #plt.show()
     fig.savefig('improved_model.png', dpi = 200)
 
+
 def what_ifs():
+    '''
+    Plots the several different 'what-if' scenarios for different managed aquifer recharge pressures.
+
+    Notes
+    ------
+    Saves the plot in file 'what_if_scenarios.png'
+    '''
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2020,step = 0.1)
 
@@ -109,9 +136,14 @@ def what_ifs():
     #plt.show()
     plt.savefig("what_if_scenarios.png")
 
-
 def without_acs():
+    '''
+    Plots the comparision between nitrate concentrations with and without an active carbon sink.
 
+    Notes
+    ------
+    Saves the plot in file 'without_acs.png'
+    '''
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2020,step = 0.1)
 
@@ -137,7 +169,17 @@ def without_acs():
     #plt.show()
     fig.savefig('without_acs.png', dpi = 200)
 
+
 def what_ifs_uncertainty():
+    '''
+    Plots the several different 'what-if' scenarios for different managed aquifer recharge pressures but
+    taking into account uncertainty.
+
+    Notes
+    ------
+    Saves the plot in file 'what_if_scenarios.png'
+    '''
+    
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2030,step = 0.1)
 
@@ -183,8 +225,15 @@ def what_ifs_uncertainty():
     #plt.show()
     plt.savefig("scenario_forecasts.png")
 
-
 def without_acs_uncertainty():
+    '''
+    Plots the comparision between nitrate concentrations with and without
+    an active carbon sink but taking into account uncertainty
+
+    Notes
+    ------
+    Saves the plot in file 'without_acs_uncertainty.png'
+    '''
 
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2020,step = 0.1)
@@ -192,11 +241,6 @@ def without_acs_uncertainty():
     t_pos = np.arange(1980,2019.75,step = 0.1)
 
     ps, p = posterior_pars()
-
-    b1 = p[0]
-    alpha = p[1]
-    bc = p[2]
-    tau = p[3]
 
     t_forecast = np.arange(2020,2030,step=0.05)
 

@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
-#functions for main model
+
 def improved_euler_step(f, tk, xk, h, pars = []): 
 
     ''' Computes a single Improved Euler step.
@@ -15,9 +15,9 @@ def improved_euler_step(f, tk, xk, h, pars = []):
 	-----------
 	f: callable
 		Derivate function.
-	xk: float
+	tk: float
 		Independent variable value at begining of step.
-	yk: float
+	xk: float
 		Solution at begining of step.
 	h: float
 		step size.
@@ -36,17 +36,17 @@ def improved_euler_step(f, tk, xk, h, pars = []):
     xk1_prediction = xk + h*f(xk,tk,*pars)
     return xk + (h/2)*(f(xk,tk,*pars) + f(xk1_prediction, tk+h, *pars))
 
-# Pressure ODE
+
 def dPdt(P, t):
     '''
+    Pressure ODE, rate of change of pressure within the aquifer
+
     Parameters:
     -----------
     P : float
         pressure value (dependent variable)
     t : float
         time value (independent variable)
-    b : float
-        Recharge strength parameter 
         
     Returns:
     -------
@@ -60,16 +60,18 @@ def dPdt(P, t):
 
     t_mar = 2030 # Time when MAR begins
 
-    if (t>t_mar): # FIX THIS IF ELSE STATEMENT
+    if (t>t_mar): 
         dP_a1  += dP_mar
 
 
         
     return -1*(P + dP_a/2) -1*(P-(dP_a1)/2) 
 
-# Concentration ODE
+
 def dCdt(ci, t, P, b1, alpha, bc, tau):
     '''
+    Concentration ODE, rate of change of nitrate concentration in aquifer
+
     Parameters
     ----------
     ci : float
@@ -97,10 +99,6 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     t_mar = 2030 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
     
-
-    # number of cows
-     #move outside
-    
     ni = np.interp((t-tau),tn,n)
     
     # Active carbon sink
@@ -109,23 +107,21 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
 
     # MAR
     if (t>t_mar):
-        dP_a += 0.0 # Pressure difference increase due to MAR
+        dP_a += 0.0 # Pressure difference increase due to MAR (for increase see Dcdt_forecast)
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
 
 def solve_dPdt(f, t):
     '''
+    Solves the ODE for pressure within the aquifer
+
     Parameters:
     -----------
     f  : callable
-        Function that returns dxdt given variable and parameter inputs.
+        Function that returns dPdt given variable and parameter inputs.
     t  : array-like
         array of floats containing time value.
-    pi : float
-        Initial value of solution.
-    b  : float
-        recharge strength parameter
         
     Returns: 
     --------
@@ -133,7 +129,6 @@ def solve_dPdt(f, t):
         array of floats containing pressure in aquifer
     '''
     P = np.zeros(t.shape) # intialising pressure vector
-    #P[0] = pi 
     dt = t[1] - t[0]
 
     # Solve using Improved Euler Method
@@ -142,13 +137,15 @@ def solve_dPdt(f, t):
         
     return P
 
-# Solve concentration ODE
+
 def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     '''
+    Solves the ODE for nitrate concentration within the aquifer
+
     Parameters:
     -----------
     f : callable
-        function that returns dxdt given variable and parameter inputs.
+        function that returns dCdt given variable and parameter inputs.
     t : array-like
         array of floats containing time value.
     P : array-like
@@ -168,11 +165,7 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
         An array of concentrations
     '''
     C = np.zeros(t.shape) # intialising concentration array
-    #C[0] = 0.2  OLD INTIAL CONCENTRAION (DO NOT DELETE)
-    #C[0] = 4.2
     dt = t[1]-t[0]
-
-    #tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
 
     # Solve using improved euler method
     for i in range(len(t)-1):
@@ -183,15 +176,14 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     return C
 
 
-
 def LPM_Model(t, b1, alpha, bc, tau):
     '''
+    Solves the pressure then concentration ODEs in serial
+
     Parameters
     ----------
     t : array-like
         Array of time values to solve LPM
-    b : float
-        Recharge strength parameter
     b1 : float
         infliltration parameter
     alpha : float
@@ -203,18 +195,12 @@ def LPM_Model(t, b1, alpha, bc, tau):
 
     Returns
     -------
-    P : array-like  
-        array of pressure values in aquifer
-    C : array-like
-        array of concentration values in the aquifer  
-    t : array-like
-        array of times that correspond to pressure and concentration values
+    C_interp : array-like
+        array of concentration values in the aquifer corresponding to times in input array t
     '''
-    # intial pressure
     
-    #Define tv
-    # tv = np.arange(1980,2020,step = 0.1) ORIGNAL TIME PERIOD (DO NOT DELETE)
-    tv = np.arange(1980,2030,step = 0.25) # New Time period
+    # intialise time values to solve for concentration
+    tv = np.arange(1980,2030,step = 0.1) # New Time period
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv)
@@ -222,20 +208,17 @@ def LPM_Model(t, b1, alpha, bc, tau):
     # Solve concentration ODE 
     C = solve_dCdt(dCdt,tv,P,b1,alpha,bc,tau)
 
-    # INTERPOLATE to T (from Tcon)
+    # interpolate concentration at times corresponding to the times in input array t
     C_interp = np.interp(t,tv,C)
     return C_interp
 
+
 def posterior_pars_old():
     '''
-    Parameter
-    ---------
-    sigma : array
-        Variance limit of pars
+    Finds the parameter values of the orignal best fit model
+
     Returns
     -------
-    pos : ndarray
-        Array of shape (N,) containing spread of parameter values
     p : array
         Optimal values of the parameters with minimal variance from data
     
@@ -245,26 +228,19 @@ def posterior_pars_old():
     '''
     # reading data for curve_fit calibration
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-
-    #sigma = [0.1]*len(c0) # variance limit of pars
-
 
     #sigma = [0.001]*len(c0) # variance limit of pars
 
     # calibrating model to data and creating covariance matrix
     p, cov = curve_fit(LPM_Model,t0,c0) 
-    cov = 0.04*cov
-    pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
-    # pos=0
-    
-    return pos, p   
+
+    return p   
+
 
 def posterior_pars():
     '''
-    Parameter
-    ---------
-    sigma : array
-        Variance limit of pars
+    Finds the parameter values of the new best fit model
+
     Returns
     -------
     pos : ndarray
@@ -278,9 +254,6 @@ def posterior_pars():
     '''
     # reading data for curve_fit calibration
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-
-    #sigma = [0.1]*len(c0) # variance limit of pars
-
 
     #sigma = [0.001]*len(c0) # variance limit of pars
 
@@ -289,21 +262,23 @@ def posterior_pars():
     
     cov = 0.04*cov
     pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
-    # pos=0
     
     return pos, p
+
 
 # Functions for forecasting 
 def dPdt_forecast(P, t, dP_Mar):
     '''
+    Pressure ODE, rate of change of pressure within the aquifer with managed aquifer recharge
+
     Parameters:
     -----------
     P : float
         pressure value (dependent variable)
     t : float
         time value (independent variable)
-    b : float
-        Recharge strength parameter 
+    dP_Mar : float
+        Pressure increase due to managed aquifer recharge
         
     Returns:
     -------
@@ -316,16 +291,18 @@ def dPdt_forecast(P, t, dP_Mar):
     
     t_mar = 2020 # Time when MAR begins
 
-    if (t>=t_mar): # FIX THIS IF ELSE STATEMENT
+    if (t>=t_mar):
         dP_a1  += dP_Mar
 
 
         
     return -1*(P + dP_a/2) -1*(P-dP_a1/2)
 
-# Concentration ODE
+
 def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     '''
+    Concentration ODE, rate of change of nitrate concentration in aquifer
+
     Parameters
     ----------
     ci : float
@@ -342,6 +319,9 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
         dilution parameter
     tau : float
         time lag paramter
+    dP_Mar : float
+        Pressure increase due to managed aquifer recharges
+
     Returns
     -------
     dCdt : float
@@ -351,10 +331,6 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     dP_surf = 0.05 # Oversurface pressure
     t_mar = 2020 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
-
-
-    # number of cows
-    #tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
     
     ni = np.interp((t-tau),tn,n) #interpolating number of cows
   
@@ -371,6 +347,8 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
 
 def solve_dPdt_forecast(f, t, dP_Mar):
     '''
+    Solves the ODE for pressure within the aquifer with managed aquifer recharge
+
     Parameters:
     -----------
     f  : callable
@@ -379,8 +357,8 @@ def solve_dPdt_forecast(f, t, dP_Mar):
         array of floats containing time value.
     pi : float
         Initial value of solution.
-    b  : float
-        recharge strength parameter
+    dP_Mar  : float
+        Pressure increase due to managed aquifer recharges
         
     Returns: 
     --------
@@ -396,9 +374,11 @@ def solve_dPdt_forecast(f, t, dP_Mar):
         
     return P
 
-# Solve concentration ODE
+
 def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     '''
+    Solves the ODE for nitrate concentration within the aquifer with managed aquifer recharge
+
     Parameters:
     -----------
     f : callable
@@ -415,6 +395,8 @@ def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
         dilution parameter
     tau : float
         time lag paramter
+    dP_Mar  : float
+        Pressure increase due to managed aquifer recharges
     Returns:
     -------
     C : array-like
@@ -438,8 +420,6 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     ----------
     t : array-like
         Array of time values to solve LPM
-    b : float
-        Recharge strength parameter
     b1 : float
         infliltration parameter
     alpha : float
@@ -452,12 +432,9 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
         Mar induced pressure difference
     Returns
     -------
-    P : array-like  
-        array of pressure values in aquifer
+ 
     C : array-like
-        array of concentration values in the aquifer  
-    t : array-like
-        array of times that correspond to pressure and concentration values
+        array of concentration values in the aquifer corresponding to times in input array t 
     '''
     
     
@@ -469,7 +446,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     # Solve concentration ODE 
     C = solve_dCdt_forecast(dCdt_forecast,tv,P,b1,alpha,bc,tau, dP_Mar)
 
-    # INTERPOLATE to T (from Tcon)
+    # interpolate concentration at times corresponding to the times in input array t
     C_interp = np.interp(t,tv,C)
     
     return C_interp
