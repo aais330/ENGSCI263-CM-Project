@@ -1,7 +1,11 @@
 # This scipt contains the function that generate figures
+import os
 import numpy as np
 from matplotlib import pyplot as plt
 from testing_functions import *
+
+# Variables to be used by all functions
+t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1).T
 
 def plot_data():
     '''
@@ -13,14 +17,10 @@ def plot_data():
     '''
 
     # reading in cow data
-    data_cow = np.genfromtxt("nl_cows.txt", delimiter = ',', skip_header = 1)
+    data_cow = np.genfromtxt("Data"+ os.sep +"nl_cows.txt", delimiter = ',', skip_header = 1)
     x_cow = data_cow[:,0]
     y_cow = data_cow[:,1]
 
-    # reading in concentration data
-    data_nconc = np.genfromtxt("nl_n.csv", delimiter = ',', skip_header = 1)
-    x_nconc = data_nconc[:,0]
-    y_nconc = data_nconc[:,1]
 
     # plotting cow and concentration data
     fig1 = plt.figure(figsize = (15,7.5))
@@ -29,13 +29,15 @@ def plot_data():
     ax.set_xlabel('Years', fontsize = 20)
     ax.set_ylabel('Number of Cows', fontsize = 20)
     ax2 = ax.twinx()
-    ax2.plot(x_nconc, y_nconc, color = 'blue', label = 'Nitrate Concentration')
+    ax2.plot(t0, c0, color = 'blue', label = 'Nitrate Concentration')
     ax2.set_ylabel('Nitrate Concentration(mg/L)', fontsize = 20)
     plt.title('Annual Cattle Numbers in Southland and Nitrate Concentrations of Edendale Farm', fontsize = 20)
     ax.plot([],[], 'b', label='Nitrate Concentration')
     ax.legend()
     #plt.show()
-    fig1.savefig('nc_data.png', dpi = 200)
+    fig1.savefig('Plots'+ os.sep +'nc_data.png', dpi = 200)
+    plt.close(fig1)
+
 
 
 def initial_model():
@@ -46,12 +48,10 @@ def initial_model():
     ------
     Saves the plot in file 'initial_model.png'
     '''
-    p = posterior_pars_old()
+    #p = posterior_pars_old()
+    p = curve_fit(LPM_Model,t0,c0)[0]
     t = np.arange(1980,2020,step=0.05)
     C = LPM_Model(t,*p)
-
-
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
@@ -60,7 +60,8 @@ def initial_model():
     plt.title("Initial Model", fontsize=20)
     ax.legend()
     #plt.show()
-    fig.savefig('initial_model.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 200)
+    plt.close(fig)
 
 def improved_model():
     '''
@@ -70,12 +71,9 @@ def improved_model():
     ------
     Saves the plot in file 'improved_model.png'
     '''
-    pos, p = posterior_pars()
+    p = posterior_pars()[1]
     t = np.arange(1980,2030,step=0.05)
     C = LPM_Model(t,*p)
-
-
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
@@ -84,7 +82,8 @@ def improved_model():
     plt.title("Improved Model", fontsize=20)
     ax.legend()
     #plt.show()
-    fig.savefig('improved_model.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
+    plt.close(fig)
 
 
 def what_ifs():
@@ -95,12 +94,9 @@ def what_ifs():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2020,step = 0.1)
 
-    t_pos = np.arange(1980,2019.75,step = 0.1)
-
-    ps, p = posterior_pars()
+    p = posterior_pars()[1]
 
     b1 = p[0]
     alpha = p[1]
@@ -109,7 +105,6 @@ def what_ifs():
 
     t_forecast = np.arange(2020,2030,step=0.05)
 
-    v=0.3
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
@@ -133,7 +128,8 @@ def what_ifs():
     plt.title("Future scenarios for potential values of $dP_{mar}", fontsize=20)
     ax.legend(loc=2)
     #plt.show()
-    plt.savefig("what_if_scenarios.png")
+    plt.savefig('Plots'+ os.sep +"what_if_scenarios.png")
+    plt.close(fig)
 
 def without_acs():
     '''
@@ -143,31 +139,26 @@ def without_acs():
     ------
     Saves the plot in file 'without_acs.png'
     '''
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
     t = np.arange(1980,2020,step = 0.1)
 
-    t_pos = np.arange(1980,2019.75,step = 0.1)
 
-    ps, p = posterior_pars()
+    p = posterior_pars()[1]
 
     b1 = p[0]
-    alpha = p[1]
     bc = p[2]
     tau = p[3]
 
-    t_forecast = np.arange(2020,2030,step=0.05)
-
-    v=0.3
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
-    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS', alpha=0.5)
-    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS ', alpha=0.5)
+    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS')
+    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS')
     ax.legend(loc=2)
     plt.title("Improved model compared to model without ACS parameter", fontsize=20)
     #plt.show()
-    fig.savefig('without_acs.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 200)
+    plt.close(fig)
 
 
 def what_ifs_uncertainty():
@@ -179,16 +170,13 @@ def what_ifs_uncertainty():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
-    
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-    t = np.arange(1980,2030,step = 0.1)
 
-    t_pos = np.arange(1980,2020,step = 0.1)
+    t_pos = np.arange(1980,2020.01,step = 0.05)
 
-    ps, p = posterior_pars()
+    ps = posterior_pars()[0]
 
 
-    t_forecast = np.arange(2020,2030,step=0.05)
+    t_forecast = np.arange(2019.99,2030,step=0.05)
 
     v=0.3
     fig = plt.figure(figsize=(20,10))
@@ -200,13 +188,13 @@ def what_ifs_uncertainty():
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
 
     for pi in range(0,ps.shape[0]):
-        ax.plot(t, LPM_Model_forecast(t, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05), 'g-', lw=0.3)
+        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05), 'g-', lw=0.3)
 
     for pi in range(0,ps.shape[0]):
-        ax.plot(t, LPM_Model_forecast(t, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1), 'b-', lw=0.3)
+        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1), 'b-', lw=0.3)
 
     for pi in range(0,ps.shape[0]):
-        ax.plot(t, LPM_Model_forecast(t, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15), 'r-', lw=0.3)
+        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15), 'r-', lw=0.3)
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
@@ -221,7 +209,8 @@ def what_ifs_uncertainty():
     ax.legend(loc=2)
     plt.title("Potential effects caused by different values of dP_{mar}$", fontsize=20)
     #plt.show()
-    plt.savefig("scenario_forecasts.png")
+    plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png")
+    plt.close(fig)
 
 def without_acs_uncertainty():
     '''
@@ -233,16 +222,10 @@ def without_acs_uncertainty():
     Saves the plot in file 'without_acs_uncertainty.png'
     '''
 
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-    t = np.arange(1980,2020,step = 0.1)
+    t_pos = np.arange(1980,2030,step = 0.1)
 
-    t_pos = np.arange(1980,2019.75,step = 0.1)
+    ps = posterior_pars()[0]
 
-    ps, p = posterior_pars()
-
-    t_forecast = np.arange(2020,2030,step=0.05)
-
-    v=0.3
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
@@ -259,4 +242,5 @@ def without_acs_uncertainty():
     ax.legend()
     plt.title("Uncertainty caused by lack of alpha parameter", fontsize=20)
     #plt.show()
-    fig.savefig('without_acs_uncertainty.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi = 200)
+    plt.close(fig)

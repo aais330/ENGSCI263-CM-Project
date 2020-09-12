@@ -3,11 +3,10 @@
 # leaching project Team 12:
 # Anton Aish, Jenny Choi, William Laughton, Annie Li, Sidharth Varma
 ######################################################################
-import numpy as np
+import numpy as np 
 import matplotlib
 from model_functions import *
 from testing_functions import *
-from benchmark import *
 from plotting_functions import *
 # Getting posterior samples and best fit parameters
 pos, pars = posterior_pars()

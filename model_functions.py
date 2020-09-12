@@ -1,10 +1,12 @@
 #import this file to any other file to access the functions
-
+import os
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 
-tn, n = np.genfromtxt('nl_cows.txt', delimiter=',', skip_header=1).T
+# Data used in multiple functions
+tn, n = np.genfromtxt("Data"+ os.sep +'nl_cows.txt', delimiter=',', skip_header=1).T
+t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1).T
 
 
 def improved_euler_step(f, tk, xk, h, pars = []): 
@@ -213,30 +215,6 @@ def LPM_Model(t, b1, alpha, bc, tau):
     return C_interp
 
 
-def posterior_pars_old():
-    '''
-    Finds the parameter values of the orignal best fit model
-
-    Returns
-    -------
-    p : array
-        Optimal values of the parameters with minimal variance from data
-    
-    Notes
-    -----
-    Utilises other functions in the same file and requires no inputs
-    '''
-    # reading data for curve_fit calibration
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
-
-    #sigma = [0.001]*len(c0) # variance limit of pars
-
-    # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0) 
-
-    return p   
-
-
 def posterior_pars():
     '''
     Finds the parameter values of the new best fit model
@@ -253,7 +231,7 @@ def posterior_pars():
     Utilises other functions in the same file and requires no inputs
     '''
     # reading data for curve_fit calibration
-    t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
+    
 
     #sigma = [0.001]*len(c0) # variance limit of pars
 
