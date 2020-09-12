@@ -8,8 +8,6 @@ import matplotlib
 from model_functions import *
 from testing_functions import *
 from plotting_functions import *
-# Getting posterior samples and best fit parameters
-pos, pars = posterior_pars()
 
 # Plotting the data
 plot_data()

@@ -63,7 +63,7 @@ def dPdt(P, t):
     t_mar = 2030 # Time when MAR begins
 
     if (t>t_mar): 
-        dP_a1  += dP_mar
+        dP_a1  += dP_mar # Pressure increase at high pressure boundary due to MAR
 
 
         
@@ -85,7 +85,7 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     b1 : float
         infiltration parameter
     alpha : float
-        Active carbon sink infiltration modication parameter
+        Active carbon sink infiltration modification parameter
     bc : float
         dilution parameter
     tau : float
@@ -101,15 +101,15 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     t_mar = 2030 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
     
-    ni = np.interp((t-tau),tn,n)
+    ni = np.interp((t-tau),tn,n) # Interpolating number of cows
     
     # Active carbon sink
     if ((t-tau)>t_acs):
-        b1 = alpha*b1
+        b1 = alpha*b1 
 
     # MAR
     if (t>t_mar):
-        dP_a += 0.0 # Pressure difference increase due to MAR (for increase see Dcdt_forecast)
+        dP_a += 0.0 # Pressure increase at high pressure boundary due to MAR (for increase see dCdt_forecast)
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
@@ -202,7 +202,7 @@ def LPM_Model(t, b1, alpha, bc, tau):
     '''
     
     # intialise time values to solve for concentration
-    tv = np.arange(1980,2030,step = 0.1) # New Time period
+    tv = np.arange(1980,2030,step = 0.1)
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv)
@@ -230,8 +230,6 @@ def posterior_pars():
     -----
     Utilises other functions in the same file and requires no inputs
     '''
-    # reading data for curve_fit calibration
-    
 
     #sigma = [0.001]*len(c0) # variance limit of pars
 
@@ -270,7 +268,7 @@ def dPdt_forecast(P, t, dP_Mar):
     t_mar = 2020 # Time when MAR begins
 
     if (t>=t_mar):
-        dP_a1  += dP_Mar
+        dP_a1  += dP_Mar # Pressure increase at high pressure boundary due to MAR
 
 
         
@@ -318,7 +316,7 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
 
     # MAR
     if (t>t_mar):
-        dP_a += dP_Mar # Pressure difference increase due to MAR
+        dP_a += dP_Mar # Pressure difference increaseat high pressure due to MAR
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 

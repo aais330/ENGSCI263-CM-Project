@@ -26,7 +26,7 @@ def func(y,t):
 
 def test_ie():
     '''
-    Testing the simple function with our implemented improved euler step method
+    Testing improved euler step with simple function func
     '''
     test_1 = improved_euler_step(func,0,0,1)
     assert((test_1-1)<tol)
@@ -248,7 +248,7 @@ def pressure_benchmark():
     # Numerical Solution
     P_numerical = solve_dPdt(dPdt_simplified,t)
     
-    # Plot
+    # Plot and compare
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
 
@@ -264,7 +264,6 @@ def pressure_benchmark():
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels)
 
-    #plt.show()
     plt.savefig('Plots'+ os.sep +"pressure_benchmark.png")
     plt.close(fig)
 
@@ -274,7 +273,7 @@ def concentration_benchmark1():
     ''' 
     t = np.arange(1980,2020,0.5)
     # Analytical solution
-    C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100            # FIX THIS
+    C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100         
 
     # Set parameters
     b1=0.5
@@ -300,7 +299,6 @@ def concentration_benchmark1():
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels)
     
-    #plt.show()
     plt.savefig('Plots'+ os.sep +"concentration_benchmark1.png")
     plt.close(fig)
 
@@ -337,7 +335,6 @@ def concentration_benchmark2():
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels)
     
-    #plt.show()
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
 

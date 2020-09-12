@@ -25,16 +25,19 @@ def plot_data():
     # plotting cow and concentration data
     fig1 = plt.figure(figsize = (15,7.5))
     ax = fig1.add_subplot(111)
-    ax.plot(x_cow, y_cow, color = 'red', label = 'Cows')
+   
+    ax.plot(x_cow, y_cow, color = 'red', label = 'Cows')  # plotting cow data
     ax.set_xlabel('Years', fontsize = 20)
     ax.set_ylabel('Number of Cows', fontsize = 20)
+
     ax2 = ax.twinx()
-    ax2.plot(t0, c0, color = 'blue', label = 'Nitrate Concentration')
+    ax2.plot(t0, c0, color = 'blue', label = 'Nitrate Concentration') # plotting nitrate data
     ax2.set_ylabel('Nitrate Concentration(mg/L)', fontsize = 20)
+
     plt.title('Annual Cattle Numbers in Southland and Nitrate Concentrations of Edendale Farm', fontsize = 20)
     ax.plot([],[], 'b', label='Nitrate Concentration')
     ax.legend()
-    #plt.show()
+
     fig1.savefig('Plots'+ os.sep +'nc_data.png', dpi = 200)
     plt.close(fig1)
 
@@ -48,18 +51,19 @@ def initial_model():
     ------
     Saves the plot in file 'initial_model.png'
     '''
-    #p = posterior_pars_old()
-    p = curve_fit(LPM_Model,t0,c0)[0]
+    
+    p = curve_fit(LPM_Model,t0,c0)[0] # solve model
     t = np.arange(1980,2020,step=0.05)
     C = LPM_Model(t,*p)
 
+    # plotting commands
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
-    ax.plot(t, C, 'b-', label="Model")
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5) # plotting concentration data
+    ax.plot(t, C, 'b-', label="Model") # plotting model
     plt.title("Initial Model", fontsize=20)
     ax.legend()
-    #plt.show()
+    
     fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 200)
     plt.close(fig)
 
@@ -71,17 +75,18 @@ def improved_model():
     ------
     Saves the plot in file 'improved_model.png'
     '''
-    p = posterior_pars()[1]
+    p = posterior_pars()[1] # find improved parameters
     t = np.arange(1980,2030,step=0.05)
-    C = LPM_Model(t,*p)
+    C = LPM_Model(t,*p) 
 
+    # plotting commands
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
-    ax.plot(t, C, 'b-', label="Model")
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5) # plotting data
+    ax.plot(t, C, 'b-', label="Model") # plotting model
     plt.title("Improved Model", fontsize=20)
     ax.legend()
-    #plt.show()
+
     fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
     plt.close(fig)
 
