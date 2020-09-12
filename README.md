@@ -7,8 +7,8 @@ This project was made to model the concentration of nitrate in the Southland aqu
 Based on the predicitions made, we make a recommendation on whether an active carbon sink should continue to be used or if the managed aquifer recharge should be implemented instead.
 
 # Installation
-main model - filename
-uncertainty/prediction - filename
-unit tests - filename
-convergence - filename
-data - filename
+main model - main.py
+uncertainty/prediction - main.py
+unit tests - testing_functions.py
+convergence - testing_functions.py
+data - nl.cows.txt, nl_n.csv

@@ -4,14 +4,49 @@ from model_functions import *
 tol=1.e-8
 
 # Unit testing functions
-def func(x,y,pars=[]):
-    pass
+def func(y,t):
+    '''
+    Simple function to test improved_euler_step - t^2
+    dy/dt=2t
+
+    Parameters
+    -----------
+    y: float
+        dependent variable
+    t: float
+        independent variable (time)
+
+    Returns
+    --------
+    func: float
+        derivative of the function dydt
+    '''
+    return 2*t
 
 def test_ie():
-    #simple function testing
-    pass
+    '''
+    Testing the simple function with our implemented improved euler step method
+    '''
+    test_1 = improved_euler_step(func,0,0,1)
+    assert((test_1-1)<tol)
+
+    test_2 = improved_euler_step(func,5,2,0.1)
+    assert((test_2-3.01)<tol)
+
+    test_3 = improved_euler_step(func,7,10,0.5)
+    assert((test_3-17.25)<tol)
+
+    test_4 = improved_euler_step(func,50,100,5)
+    assert((test_4-625)<tol)
+
+    print('Improved Euler tests passed \n')
 
 def test_dPdt():
+    '''
+    Unit tests for the pressure model.
+    These tests check the edge cases of the if statements in the pressure differential equation function. 
+    '''
+
     # t < t_mar before t_mar
     check_dPdt = dPdt(10, 2015)
     assert((check_dPdt+20)<tol)
@@ -26,26 +61,13 @@ def test_dPdt():
     check_dPdt4 = dPdt_forecast(20, 2020.1,.5)
     assert((check_dPdt4)+39.75<tol)
 
-    # test when switches to tmar on
-    # THINK THIS IS TESTING IMPROVED EULER NOT dPdt
-    # # t < t_mar
-    # check_dPdt4 = improved_euler_step(dPdt, 2019, -6, 1, pars=[0.2])
-    # assert((check_dPdt4+4.08)<tol) #calculation gave me 11.975, maybe i missed something?
-
-    # check_dPdt5 = improved_euler_step(dPdt, 1998, 6, 0.2, pars=[0.2])
-    # assert((check_dPdt5-5.54)<tol) # Keep getting 5.54 even though the year changes
-
-    # # t > t_mar
-    # check_dPdt6 = improved_euler_step(dPdt, 2021, 6, 0.2, pars=[0.2])
-    # assert((check_dPdt6-5.55)<tol)
-
-
-    print("dPdt passed \n")
-
-
-# dCdt(ci, t, P, b1, alpha, bc, tau):
+    print("dPdt tests passed \n")
 
 def test_dCdt():
+    '''
+    Unit tests for the concentration model.
+    These tests check the edge cases of the if statements in the concentration differential equation function. 
+    '''
 
     # between 1990.5 and before active carbon sink and no time lag
     check_dCdt = dCdt(50, 1999.5, 0, 1, 1, 1, 0) 
@@ -75,85 +97,68 @@ def test_dCdt():
     check_dCdt = dCdt(50,2021,0, 1, 1, 1, 0) 
     assert((check_dCdt-31809.55)<tol)
 
-
     # after 2020 with mar, with active carbon sink
     check_dCdt = dCdt_forecast(50,2021,0, 1, 0.5, 1, 0,0.5) 
     assert((check_dCdt-15916.025)<tol)
 
-    # Testing Improved euler not dCdt
-    # # Tests when t-tau > 1990.5 
-    # # Test when t-tau>t_acs 2015>2010
-    # check_dCdt5=improved_euler_step(dCdt,2020,0.2,1,pars=[0,b1,alpha,bc,tau])
-    # assert((check_dCdt5-0.1665)<tol)
+    print("dCdt tests passed \n")
 
-    # # Test when t-tau<t_acs 2009<2010
-    # check_dCdt6=improved_euler_step(dCdt,2014,0.2,1,pars=[0,b1,alpha,bc,tau])
-    # assert((check_dCdt6-13870.7)<tol)
-
-    # # Test when t>t_mar
-    # check_dCdt7=improved_euler_step(dCdt,2021,0.2,1,pars=[0,b1,alpha,bc,tau]) 
-    # assert((check_dCdt7-0.149)<tol) 
-
-    # # Test when t<t_mar
-    # check_dCdt8=improved_euler_step(dCdt,2018,0.2,1,pars=[0,b1,alpha,bc,tau])
-    # assert((check_dCdt8-0.1903)<tol)
-
-    print("dCdt passed \n")
-
-
-# convergence testing solutions for different step sizes
 def convergence_analysis():
     '''
-    Convergence analysis for our model
+    Convergence analysis for our model.
+    This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
+    a variety of stepsizes.
     '''
 
-    # pre-allocating solutions array
+    # Pre-allocating solutions array
     sols = []
-    step_sizes = np.arange(0.1, 1, 0.1)
+    # Creating stepsizes array
+    step_sizes = np.arange(0.05,2.05,0.1)
 
+    # Get the parameters for the model
     pars = posterior_pars()[1]
 
-    for step in 1/step_sizes:
+    for step in step_sizes:
         # time range with step size
-        t = np.arange(1998, 2020, step)
-
+        t = np.arange(1980, 2020, step)
+        # Get the concentration model
         C = LPM_Model(t, *pars)
-        C = np.interp(2012, t, C)
-        # add concentration solution at each step size to array
+        # Interpolate model at chosen year
+        C = np.interp(2016, t, C)
+        # add solution at each step size to array
         sols.append(C)
-    
-
+  
+    # Plot the graph
     fig2 = plt.figure()
     ax2 = fig2.add_subplot(111)
-    ax2.plot(step_sizes, sols, 'mo--', label = 'Nitrate concentration in 2012')
+    ax2.plot(1/step_sizes, sols, 'mo--', label = 'Nitrate concentration in 2016')
     ax2.legend() 
     ax2.set_title('Convergence of nitrate concentration step sizes')
     ax2.set_xlabel('Step size (1/h)')
-    ax2.set_ylabel('Nitrate Concentration in 2012')
-    #plt.show()
+    ax2.set_ylabel('Nitrate Concentration in 2016')
+    # plt.show()
     fig2.savefig('Plots'+ os.sep + 'convergence.png')
     plt.close(fig2)
 
-
 # Benchmarking functions
-# Theses functions benchmark the two ODEs formulated in the Modified_Derivates script
+# Theses functions benchmark the two ODEs formulated in the model_functions script
 
 # Simplfied pressure ODE
 def dPdt_simplified(P, t):
     '''
+    This function simplifies the pressure model for benchmarking
+
     Parameters:
     -----------
     P : float
-        pressure value (dependent variable)
+        Pressure value (dependent variable)
     t : float
-        time value (independent variable)
-    b : float
-        Recharge strength parameter 
+        Time value (independent variable)
         
     Returns:
     -------
-     dPdt : float
-        rate of change of pressure in aquifer
+    dPdt : float
+        Rate of change of pressure in aquifer
     '''
     
     dP_a = 0.1 # Pressure difference across aquifer(given in project doc)
@@ -162,29 +167,32 @@ def dPdt_simplified(P, t):
     return -1*(P + dP_a/2) -1*(P-(dP_a1)/2) 
 
 # Simplified concentration ODE for -100 cows
-def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
+def dCdt_simplified(ci, t, P, b1, alpha, bc, tau):
     '''
+    This function simplies the concentration model for benchmarking with a negative number of cows
+
     Parameters
     ----------
     ci : float
         Concentration of nitrate (dependent variable)
     t : float
-        time value (independent variable)
+        Time value (independent variable)
     P : float
         Current pressure of aquifer
     b1 : float
-        infliltration parameter
+        Infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
-        dilution parameter
+        Dilution parameter
     tau : float
-        time lag paramter
+        Time lag parameter
 
     Returns
     -------
     dCdt : float
-        rate of change of concentration in aquifer
+        Rate of change of concentration in aquifer
+
     '''
     dP_a = 0.1 # Pressure difference across aquifer
     dP_surf = 0.05 # Oversurface pressure
@@ -196,27 +204,30 @@ def dCdt_simplified(ci, t, P,b1,alpha, bc, tau):
 # Simplified concentration ODE for 100 cows
 def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
     '''
+    This function simplies the concentration model for benchmarking with a positive number of cows
+
     Parameters
     ----------
     ci : float
         Concentration of nitrate (dependent variable)
     t : float
-        time value (independent variable)
+        Time value (independent variable)
     P : float
         Current pressure of aquifer
     b1 : float
-        infliltration parameter
+        Infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
-        dilution parameter
+        Dilution parameter
     tau : float
-        time lag paramter
+        Time lag parameter
 
     Returns
     -------
     dCdt : float
-        rate of change of concentration in aquifer
+        Rate of change of concentration in aquifer
+
     '''
     dP_a = 0.1 # Pressure difference across aquifer
     dP_surf = 0.05 # Oversurface pressure
@@ -225,15 +236,18 @@ def dCdt_simplified1(ci, t, P,b1,alpha, bc, tau):
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
-# Pressure benchmark without MAR
 def pressure_benchmark():
+    '''
+    Benchmarking solution for pressure without MAR
+    '''
     # Analytical Solution
     t = np.arange(1980,2020,0.5)
     P_analytical = np.zeros(t.shape)
 
     # Numerical Solution
     P_numerical = solve_dPdt(dPdt_simplified,t)
-
+    
+    # Plot
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
 
@@ -253,12 +267,13 @@ def pressure_benchmark():
     plt.savefig('Plots'+ os.sep +"pressure_benchmark.png")
     plt.close(fig)
 
-# Concentration benchmark with negative 100 cows
-def concentration_benchmark1():    
+def concentration_benchmark1():   
+    '''
+    Benchmarking solution for concentration model with negative 100 cows
+    ''' 
     t = np.arange(1980,2020,0.5)
     C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100            # FIX THIS
 
-    
     b1=0.5
     alpha=0
     bc=0.5
@@ -284,8 +299,11 @@ def concentration_benchmark1():
     plt.savefig('Plots'+ os.sep +"concentration_benchmark1.png")
     plt.close(fig)
 
-# Constant number of cows (100)
 def concentration_benchmark2(): 
+    '''
+    Benchmarking solution for concentration model with constant 100 cows
+    ''' 
+
     t = np.arange(1980,2020,0.5)
     C_Analytical = (-499/5)*np.exp((-t+1980)/20) + 100 
 
@@ -314,3 +332,4 @@ def concentration_benchmark2():
     #plt.show()
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
+

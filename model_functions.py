@@ -10,17 +10,17 @@ t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1)
 
 
 def improved_euler_step(f, tk, xk, h, pars = []): 
+    ''' 
+    Computes a single Improved Euler step.
 
-    ''' Computes a single Improved Euler step.
-
-	Paramters
+	Parameters
 	-----------
 	f: callable
 		Derivate function.
 	tk: float
-		Independent variable value at begining of step.
+		Independent variable value at beginning of step.
 	xk: float
-		Solution at begining of step.
+		Solution at beginning of step.
 	h: float
 		step size.
 	pars: iterable
@@ -83,13 +83,13 @@ def dCdt(ci, t, P, b1, alpha, bc, tau):
     P : float
         Current pressure of aquifer
     b1 : float
-        infliltration parameter
+        infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
         dilution parameter
     tau : float
-        time lag paramter
+        time lag parameter
 
     Returns
     -------
@@ -127,7 +127,7 @@ def solve_dPdt(f, t):
         
     Returns: 
     --------
-    P : array like
+    P : array-like
         array of floats containing pressure in aquifer
     '''
     P = np.zeros(t.shape) # intialising pressure vector
@@ -153,13 +153,13 @@ def solve_dCdt(f,t,P, b1,alpha, bc, tau):
     P : array-like
         array of floats containing the pressure within the aquifer
     b1 : float
-        infliltration parameter
+        infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
         dilution parameter
     tau : float
-        time lag paramter
+        time lag parameter
 
     Returns:
     -------
@@ -187,18 +187,18 @@ def LPM_Model(t, b1, alpha, bc, tau):
     t : array-like
         Array of time values to solve LPM
     b1 : float
-        infliltration parameter
+        Infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
-            dilution parameter
+        Dilution parameter
     tau : float
-        time lag
+        Time lag
 
     Returns
     -------
     C_interp : array-like
-        array of concentration values in the aquifer corresponding to times in input array t
+        Array of concentration values in the aquifer corresponding to times in input array t
     '''
     
     # intialise time values to solve for concentration
@@ -290,15 +290,15 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     P : float
         Current pressure of aquifer
     b1 : float
-        infliltration parameter
+        infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
         dilution parameter
     tau : float
-        time lag paramter
+        time lag parameter
     dP_Mar : float
-        Pressure increase due to managed aquifer recharges
+        Pressure increase due to managed aquifer recharge
 
     Returns
     -------
@@ -336,11 +336,11 @@ def solve_dPdt_forecast(f, t, dP_Mar):
     pi : float
         Initial value of solution.
     dP_Mar  : float
-        Pressure increase due to managed aquifer recharges
+        Pressure increase due to managed aquifer recharge
         
     Returns: 
     --------
-    P : array like
+    P : array-like
         array of floats containing pressure in aquifer
     '''
     P = np.zeros(t.shape) # intialising pressure vector
@@ -366,13 +366,13 @@ def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     P : array-like
         array of floats containing the pressure within the aquifer
     b1 : float
-        infliltration parameter
+        infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
         dilution parameter
     tau : float
-        time lag paramter
+        time lag parameter
     dP_Mar  : float
         Pressure increase due to managed aquifer recharges
     Returns:
@@ -399,7 +399,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     t : array-like
         Array of time values to solve LPM
     b1 : float
-        infliltration parameter
+        infiltration parameter
     alpha : float
         Active carbon sink infiltration modication parameter
     bc : float
@@ -407,7 +407,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     tau : float
         time lag
     dP_Mar: float
-        Mar induced pressure difference
+        MAR induced pressure difference
     Returns
     -------
  
