@@ -1,12 +1,13 @@
 import os
 import numpy as np
 from model_functions import *
+# error tolerance
 tol=1.e-8
 
 # Unit testing functions
 def func(y,t):
     '''
-    Simple function to test improved_euler_step - t^2
+    Simple function to test improved_euler_step - y=t^2
     dy/dt=2t
 
     Parameters
@@ -272,16 +273,20 @@ def concentration_benchmark1():
     Benchmarking solution for concentration model with negative 100 cows
     ''' 
     t = np.arange(1980,2020,0.5)
+    # Analytical solution
     C_Analytical = (100/np.exp(-49.5))*np.exp(-0.025*t)-100            # FIX THIS
 
+    # Set parameters
     b1=0.5
     alpha=0
     bc=0.5
     tau = 0
     
+    # Calculate numerical solution for both
     P_numerical = solve_dPdt(dPdt_simplified,t)
     C_Numerical = solve_dCdt(dCdt_simplified,t,P_numerical,b1,alpha,bc,tau)
 
+    # Plot and compare
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
 
@@ -305,17 +310,20 @@ def concentration_benchmark2():
     ''' 
 
     t = np.arange(1980,2020,0.5)
+    # Analytical solution
     C_Analytical = (-499/5)*np.exp((-t+1980)/20) + 100 
 
-    
+    # Set parameters
     b1=1
     alpha=0
     bc=1
     tau = 0
     
+    # Calculate numerical solutions
     P_numerical = solve_dPdt(dPdt_simplified,t)
     C_Numerical = solve_dCdt(dCdt_simplified1,t,P_numerical,b1,alpha,bc,tau)
 
+    # Plot and compare
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
 
