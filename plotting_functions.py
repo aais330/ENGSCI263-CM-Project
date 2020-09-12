@@ -47,16 +47,18 @@ def initial_model():
     Saves the plot in file 'initial_model.png'
     '''
     p = posterior_pars_old()
-    t = np.arange(1980,2030,step=0.05)
+    t = np.arange(1980,2020,step=0.05)
     C = LPM_Model(t,*p)
 
 
     t0, c0 = np.genfromtxt('nl_n.csv', delimiter=',', skip_header=1).T
 
-    fig = plt.figure(figsize=(10,6))
+    fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
-    ax.plot(t, C, 'm-')
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
+    ax.plot(t, C, 'b-', label="Model")
+    plt.title("Initial Model", fontsize=20)
+    ax.legend()
     #plt.show()
     fig.savefig('initial_model.png', dpi = 200)
 
@@ -77,8 +79,10 @@ def improved_model():
 
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
-    ax.plot(t, C, 'm-')
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
+    ax.plot(t, C, 'b-', label="Model")
+    plt.title("Improved Model", fontsize=20)
+    ax.legend()
     #plt.show()
     fig.savefig('improved_model.png', dpi = 200)
 
@@ -106,32 +110,27 @@ def what_ifs():
     t_forecast = np.arange(2020,2030,step=0.05)
 
     v=0.3
-    fig = plt.figure(figsize=(10,6))
+    fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
     # ax.errorbar(t0,c0,yerr=v,fmt='ro', label='data', markersize=2.2)
 
     #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-')
 
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.01), 'g-')
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-')
 
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'b-')
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-')
 
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-')
 
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'r-')
-
-    # for pi in ps:
-    #     ax.plot(t_pos, LPM_Model(t_pos, *pi), 'k-', alpha=0.5, lw=0.5)
-
-    #ax.plot(t, LPM_Model(t, *p), 'k-', label='Best fit', alpha=1)
-    ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit')
-    #ax.plot([], [], lw=0.5, label='posterior samples')
+    ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
     ax.plot([], [], 'm-', label='$dP_{mar}$ = 0.0 MPa')
-    ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.01 MPa')
-    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.05 MPa')
-    ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.1 MPa')
+    ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.05 MPa')
+    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.10 MPa')
+    ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.15 MPa')
+    plt.title("Future scenarios for potential values of $dP_{mar}", fontsize=20)
     ax.legend(loc=2)
     #plt.show()
     plt.savefig("what_if_scenarios.png")
@@ -159,13 +158,14 @@ def without_acs():
     t_forecast = np.arange(2020,2030,step=0.05)
 
     v=0.3
-    fig = plt.figure(figsize=(10,6))
+    fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
     ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS', alpha=0.5)
     ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS ', alpha=0.5)
     ax.legend(loc=2)
+    plt.title("Improved model compared to model without ACS parameter", fontsize=20)
     #plt.show()
     fig.savefig('without_acs.png', dpi = 200)
 
@@ -191,7 +191,7 @@ def what_ifs_uncertainty():
     t_forecast = np.arange(2020,2030,step=0.05)
 
     v=0.3
-    fig = plt.figure(figsize=(10,6))
+    fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     #ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
 
@@ -211,17 +211,15 @@ def what_ifs_uncertainty():
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
-    ax.errorbar(t0,c0,yerr=v,fmt='ro', label='data', markersize=2.5)
+    ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
 
-    # #effects of acs
-    #ax.plot(t, LPM_Model(t, b1,alpha,bc,tau), 'b-', label='Best fit', alpha=1)
-    #ax.plot(t, LPM_Model(t, b1, alpha, bc, tau), 'k-', label='Forecast Best-fit')
     ax.plot([], [], 'k-', label='posterior samples')
     ax.plot([], [], 'm-', label='$dP_{mar}$ = 0.0 MPa')
     ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.05 MPa')
-    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.1 MPa')
+    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.10 MPa')
     ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.15 MPa')
     ax.legend(loc=2)
+    plt.title("Potential effects caused by different values of dP_{mar}$", fontsize=20)
     #plt.show()
     plt.savefig("scenario_forecasts.png")
 
@@ -245,9 +243,9 @@ def without_acs_uncertainty():
     t_forecast = np.arange(2020,2030,step=0.05)
 
     v=0.3
-    fig = plt.figure(figsize=(10,6))
+    fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
+    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0), 'g-', lw=0.3)
@@ -259,7 +257,6 @@ def without_acs_uncertainty():
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
     ax.legend()
-    #ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast best-fit', alpha=0.5)
-    #ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='without ACS ', alpha=0.5)
+    plt.title("Uncertainty caused by lack of alpha parameter", fontsize=20)
     #plt.show()
     fig.savefig('without_acs_uncertainty.png', dpi = 200)
