@@ -100,6 +100,9 @@ def what_ifs():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
+    trange = np.arange(1980,2030,step = 0.1)
+    recom_level_lower = [3.3]*len(trange)
+    recom_level_up = [5.4]*len(trange)
     t = np.arange(1980,2020,step = 0.1)
 
     p = posterior_pars()[1]
@@ -114,6 +117,8 @@ def what_ifs():
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
+    ax.plot(trange, recom_level_lower, 'k--', alpha=0.5, label='Recommended levels')
+    ax.plot(trange, recom_level_up, 'k--', alpha=0.5)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
     # ax.errorbar(t0,c0,yerr=v,fmt='ro', label='data', markersize=2.2)
 
@@ -177,6 +182,9 @@ def what_ifs_uncertainty():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
+    trange = np.arange(1980,2030,step = 0.1)
+    recom_level_lower = [3.3]*len(trange)
+    recom_level_up = [5.4]*len(trange)
 
     t_pos = np.arange(1980,2020.01,step = 0.05)
 
@@ -189,7 +197,8 @@ def what_ifs_uncertainty():
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     #ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
-
+    ax.plot(trange, recom_level_lower, 'k--', alpha=0.5, label='Recommended levels')
+    ax.plot(trange, recom_level_up, 'k--', alpha=0.5)
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
