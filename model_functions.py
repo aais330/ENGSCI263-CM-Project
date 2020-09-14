@@ -222,7 +222,7 @@ def posterior_pars():
     Returns
     -------
     pos : ndarray
-        Array of shape (N,) containing spread of parameter values
+        Array of shape (N,) containing alternative of parameter values
     p : array
         Optimal values of the parameters with minimal variance from data
     
@@ -231,12 +231,12 @@ def posterior_pars():
     Utilises other functions in the same file and requires no inputs
     '''
 
-    #sigma = [0.001]*len(c0) # variance limit of pars
+    sigma = [0.15]*len(c0) # uncertainty in data
 
     # calibrating model to data and creating covariance matrix
-    p, cov = curve_fit(LPM_Model,t0,c0, bounds=((0,0,0,0.5),(1e-04,np.inf,np.inf,np.inf))) 
+    p, cov = curve_fit(LPM_Model,t0,c0, sigma = sigma,bounds=((0,0,0,0.5),(1e-04,np.inf,np.inf,np.inf)), absolute_sigma=True)
     
-    cov = 0.04*cov
+    #cov = 0.04*cov
     pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
     
     return pos, p

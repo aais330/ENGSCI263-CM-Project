@@ -87,6 +87,7 @@ def improved_model():
     plt.title("Improved Model", fontsize=20)
     ax.legend()
 
+    #plt.show()
     fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
     plt.close(fig)
 
@@ -109,6 +110,7 @@ def what_ifs():
     tau = p[3]
 
     t_forecast = np.arange(2020,2030,step=0.05)
+    LPM_Model_forecast(t, b1, alpha, bc, tau, 0.1)
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)

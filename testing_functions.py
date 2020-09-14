@@ -106,7 +106,7 @@ def test_dCdt():
 
 def convergence_analysis():
     '''
-    Convergence analysis for our model.
+    sergence analysis for our model.
     This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
     a variety of stepsizes.
     '''
