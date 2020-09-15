@@ -120,6 +120,7 @@ def what_ifs():
 
     #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
 
+<<<<<<< HEAD
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-')
     #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0)[-1])
 
@@ -131,13 +132,18 @@ def what_ifs():
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-')
     #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15)[-1])
+=======
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-', label='$dP_{MAR}$ = 0.0 MPa')
+
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-', label='$dP_{MAR}$ = 0.05 MPa')
+
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-', label='$dP_{MAR}$ = 0.10 MPa')
+
+    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
+>>>>>>> ea7ae04970d76afb8ed21c6db7119bacb02d2c3d
 
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
-    ax.plot([], [], 'm-', label='$dP_{mar}$ = 0.0 MPa')
-    ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.05 MPa')
-    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.10 MPa')
-    ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.15 MPa')
-    plt.title("Future scenarios for potential values of $dP_{mar}", fontsize=20)
+    plt.title("Future scenarios for potential values of $dP_{MAR}$", fontsize=20)
     ax.legend(loc=2)
     #plt.show()
     plt.savefig('Plots'+ os.sep +"what_if_scenarios.png")
@@ -223,12 +229,12 @@ def what_ifs_uncertainty():
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
 
     ax.plot([], [], 'k-', label='posterior samples')
-    ax.plot([], [], 'm-', label='$dP_{mar}$ = 0.0 MPa')
-    ax.plot([], [], 'g-', label='$dP_{mar}$ = 0.05 MPa')
-    ax.plot([], [], 'b-', label='$dP_{mar}$ = 0.10 MPa')
-    ax.plot([], [], 'r-', label='$dP_{mar}$ = 0.15 MPa')
+    ax.plot([], [], 'm-', label='$dP_{MAR}$ = 0.0 MPa')
+    ax.plot([], [], 'g-', label='$dP_{MAR}$ = 0.05 MPa')
+    ax.plot([], [], 'b-', label='$dP_{MAR}$ = 0.10 MPa')
+    ax.plot([], [], 'r-', label='$dP_{MAR}$ = 0.15 MPa')
     ax.legend(loc=2)
-    plt.title("Potential effects caused by different values of dP_{mar}$", fontsize=20)
+    plt.title("Potential effects caused by different values of $dP_{MAR}$", fontsize=20)
     #plt.show()
     plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png")
     plt.close(fig)
