@@ -63,7 +63,7 @@ def initial_model():
     ax.plot(t, C, 'b-', label="Model") # plotting model
     plt.title("Initial Model", fontsize=20)
     ax.legend()
-    
+
     fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 200)
     plt.close(fig)
 
@@ -76,7 +76,7 @@ def improved_model():
     Saves the plot in file 'improved_model.png'
     '''
     p = posterior_pars()[1] # find improved parameters
-    t = np.arange(1980,2030,step=0.05)
+    t = np.arange(1980,2020,step=0.05)
     C = LPM_Model(t,*p) 
 
     # plotting commands
@@ -87,7 +87,7 @@ def improved_model():
     plt.title("Improved Model", fontsize=20)
     ax.legend()
 
-    #plt.show()
+  
     fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
     plt.close(fig)
 
@@ -188,8 +188,7 @@ def what_ifs_uncertainty():
     v=0.3
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    #ax.plot(t0,c0, 'ro', label="data", markersize=2.5)
-
+    #ax.plot(t0x,c0, 'ro', label="data", markersize=2.5)
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
@@ -289,6 +288,7 @@ def misfit_plot(old):
     else:
         file = 'misfit_plot_new_model'
 
+    #plt.show()
     f.savefig('Plots'+ os.sep + file, dpi = 200)
     plt.close(f)
 
