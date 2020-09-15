@@ -120,7 +120,6 @@ def what_ifs():
 
     #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
 
-<<<<<<< HEAD
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-')
     #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0)[-1])
 
@@ -132,15 +131,6 @@ def what_ifs():
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-')
     #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15)[-1])
-=======
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-', label='$dP_{MAR}$ = 0.0 MPa')
-
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-', label='$dP_{MAR}$ = 0.05 MPa')
-
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-', label='$dP_{MAR}$ = 0.10 MPa')
-
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
->>>>>>> ea7ae04970d76afb8ed21c6db7119bacb02d2c3d
 
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
     plt.title("Future scenarios for potential values of $dP_{MAR}$", fontsize=20)
@@ -173,6 +163,10 @@ def without_acs():
     ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS')
     ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS')
     ax.legend(loc=2)
+    
+    print(LPM_Model(t, b1, 1, bc, tau)[-1])
+    print(LPM_Model(t, *p)[-1])
+
     plt.title("Improved model compared to model without ACS parameter", fontsize=20)
     #plt.show()
     fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 200)
@@ -249,7 +243,7 @@ def without_acs_uncertainty():
     Saves the plot in file 'without_acs_uncertainty.png'
     '''
 
-    t_pos = np.arange(1980,2030,step = 0.1)
+    t_pos = np.arange(1980,2020,step = 0.1)
 
     ps = posterior_pars()[0]
 
@@ -260,18 +254,17 @@ def without_acs_uncertainty():
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
     C = np.zeros(ps.shape[0])
 
+    # Without ACS
     for pi in range(0,ps.shape[0]):
         C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0), 'g-', lw=0.3)
 
-  
-    confidence_int(C,'Without ACS')
-
+    # With ACS
     for pi in range(0,ps.shape[0]):
-        C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
+        C[pi] -= LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
-    confidence_int(C,'With ACS')
+    #confidence_int(C,'With vs without ACS')
    
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')

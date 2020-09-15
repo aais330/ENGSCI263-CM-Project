@@ -431,7 +431,6 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
 def confidence_int(data, name): 
     '''
     Computes and prints a 90% confidence interval for the data
-
     '''
 
     std = np.std(data)
