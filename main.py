@@ -9,6 +9,7 @@ from model_functions import *
 from testing_functions import *
 from plotting_functions import *
 
+
 # Plotting the data
 plot_data()
 
@@ -32,15 +33,16 @@ concentration_benchmark2()
 
 # Initial model
 initial_model()
+misfit_plot(True)
 
 # Improved model
 improved_model()
+misfit_plot(False)
 
 
 #forecasting different mar pressures and without active carbon sink
 what_ifs()
 without_acs()
-what_ifs_mar_without_acs()
 
 
 #Forecasts with uncertainty

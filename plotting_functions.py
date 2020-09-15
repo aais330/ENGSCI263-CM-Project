@@ -251,3 +251,44 @@ def without_acs_uncertainty():
     #plt.show()
     fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi = 200)
     plt.close(fig)
+
+def misfit_plot(old):
+
+    t = np.arange(1980,2030,step = 0.1)
+    t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1).T
+
+    if old:
+        parameters = curve_fit(LPM_Model,t0,c0)[0]
+    else:
+        parameters = posterior_pars()[1]
+
+    C = LPM_Model(t,*parameters)
+
+
+    # Producing misfit plot
+    # Pre-allocating array
+    misfit=[]
+
+    # Interpolate concentration at data points for model
+    C=np.interp(t0,t,C)
+
+    # Append differences to misfit array
+    for i in range(len(C)):
+        misfit.append(c0[i]-C[i])
+
+    # Plot
+    f, ax2 = plt.subplots(1,1)
+    ax2.plot(t0,misfit,'bx', label = 'Misfit')
+    ax2.axhline(0., c='k', ls=':')
+    ax2.set_title('Best fit LPM model')
+    plt.ylabel('Concentration misfit (mg/L)')
+    plt.xlabel('Time (Years)')
+
+    if old:
+        file = 'misfit_plot_old_model'
+    else:
+        file = 'misfit_plot_new_model'
+
+    f.savefig('Plots'+ os.sep + file, dpi = 200)
+    plt.close(f)
+
