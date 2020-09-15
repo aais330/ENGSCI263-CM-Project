@@ -1,6 +1,7 @@
 # This scipt contains the function that generate figures
 import os
 import numpy as np
+from scipy import stats
 from matplotlib import pyplot as plt
 from testing_functions import *
 
@@ -120,12 +121,16 @@ def what_ifs():
     #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-')
+    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0)[-1])
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-')
+    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05)[-1])
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-')
+    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1)[-1])
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-')
+    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15)[-1])
 
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
     ax.plot([], [], 'm-', label='$dP_{mar}$ = 0.0 MPa')
@@ -168,6 +173,7 @@ def without_acs():
     plt.close(fig)
 
 
+
 def what_ifs_uncertainty():
     '''
     Plots the several different 'what-if' scenarios for different managed aquifer recharge pressures but
@@ -185,22 +191,31 @@ def what_ifs_uncertainty():
 
     t_forecast = np.arange(2019.99,2030,step=0.05)
 
-    v=0.3
+    v=0.15
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
     #ax.plot(t0x,c0, 'ro', label="data", markersize=2.5)
+    C = np.zeros(ps.shape[0])
 
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
+    #confidence_int(C,'What If, NO MAR')
 
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05), 'g-', lw=0.3)
+    #confidence_int(C,'What If, 0.05')
 
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1), 'b-', lw=0.3)
+    #confidence_int(C,'What If, 0.1')
 
     for pi in range(0,ps.shape[0]):
+        C[pi] =  LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15), 'r-', lw=0.3)
+    #confidence_int(C,'What if, 0.15')
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
@@ -234,15 +249,24 @@ def without_acs_uncertainty():
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
+    #ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
+    v = 0.15
+    ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
+    C = np.zeros(ps.shape[0])
 
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0), 'g-', lw=0.3)
 
+  
+    confidence_int(C,'Without ACS')
 
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
+    confidence_int(C,'With ACS')
+   
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
     ax.legend()
@@ -252,6 +276,9 @@ def without_acs_uncertainty():
     plt.close(fig)
 
 def misfit_plot(old):
+    '''
+    Produces a misfit plot
+    '''
 
     t = np.arange(1980,2030,step = 0.1)
     t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1).T

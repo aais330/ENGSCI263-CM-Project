@@ -3,6 +3,7 @@ import os
 import numpy as np
 from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
+from scipy import stats
 
 # Data used in multiple functions
 tn, n = np.genfromtxt("Data"+ os.sep +'nl_cows.txt', delimiter=',', skip_header=1).T
@@ -237,7 +238,7 @@ def posterior_pars():
     p, cov = curve_fit(LPM_Model,t0,c0, sigma = sigma,bounds=((0,0,0,0.5),(1e-04,np.inf,np.inf,np.inf)), absolute_sigma=True)
     
     #cov = 0.04*cov
-    pos = np.random.multivariate_normal(p, cov, 50) # random variates of the calibrated pars
+    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
     
     return pos, p
 
@@ -427,3 +428,14 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     
     return C_interp
 
+def confidence_int(data, name): 
+    '''
+    Computes and prints a 90% confidence interval for the data
+
+    '''
+
+    std = np.std(data)
+    mean = np.mean(data)
+    ci = stats.norm.interval(0.9,loc = mean, scale = std)
+    print(name)
+    print(ci)
