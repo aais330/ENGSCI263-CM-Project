@@ -249,15 +249,15 @@ def pressure_benchmark():
     P_numerical = solve_dPdt(dPdt_simplified,t)
     
     # Plot and compare
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure()
     ax = fig.add_subplot(111)
 
     ax.plot(t,P_analytical,'b', label = 'Analytical Solution')
     ax.plot(t,P_numerical,'r+', label = 'Numeric Solution')
 
-    ax.set_title('Analytical vs Numeric solution')
-    plt.ylabel('Pressure')
-    plt.xlabel('Time')
+    ax.set_title('Analytical vs Numeric solution (Pressure equation)')
+    plt.ylabel('Pressure [MPa]')
+    plt.xlabel('Time [yrs]')
     plt.xlim(1980,2020)
     plt.ylim(-5,5)
 
@@ -286,15 +286,15 @@ def concentration_benchmark1():
     C_Numerical = solve_dCdt(dCdt_simplified,t,P_numerical,b1,alpha,bc,tau)
 
     # Plot and compare
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure()
     ax = fig.add_subplot(111)
 
     ax.plot(t,C_Analytical,'b', label = 'Analytical Solution')
     ax.plot(t,C_Numerical,'r+', label = 'Numeric Solution')
 
     ax.set_title('Analytical vs Numeric solution (negative 100 cows)')
-    plt.ylabel('Concentration')
-    plt.xlabel('Time')
+    plt.ylabel('Nitrate Concentration [mg/L]')
+    plt.xlabel('Time [yrs]')
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels)
@@ -322,15 +322,15 @@ def concentration_benchmark2():
     C_Numerical = solve_dCdt(dCdt_simplified1,t,P_numerical,b1,alpha,bc,tau)
 
     # Plot and compare
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure()
     ax = fig.add_subplot(111)
 
     ax.plot(t,C_Analytical,'b', label = 'Analytical Solution')
     ax.plot(t,C_Numerical,'r+', label = 'Numeric Solution')
 
     ax.set_title('Analytical vs Numeric solution (100 cows)')
-    plt.ylabel('Concentration')
-    plt.xlabel('Time')
+    plt.ylabel('Nitrate Concentration [mg/L]')
+    plt.xlabel('Time [yrs]')
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels)

@@ -10,7 +10,6 @@ from testing_functions import *
 from plotting_functions import *
 
 # Plotting the data
-without_acs_uncertainty()
 plot_data()
 
 # unit tests
@@ -48,3 +47,6 @@ without_acs()
 #Forecasts with uncertainty
 what_ifs_uncertainty()
 without_acs_uncertainty()
+
+# Alpha parameter distribution
+alpha_distribution()

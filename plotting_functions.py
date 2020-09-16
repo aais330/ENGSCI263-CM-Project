@@ -58,12 +58,15 @@ def initial_model():
     C = LPM_Model(t,*p) 
 
     # plotting commands
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5) # plotting concentration data
     ax.plot(t, C, 'b-', label="Model") # plotting model
-    plt.title("Initial Model", fontsize=20)
+    plt.title("best fit LPM model")
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
     ax.legend()
+    ax.legend(loc=2)
 
     fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 200)
     plt.close(fig)
@@ -85,8 +88,11 @@ def improved_model():
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5) # plotting data
     ax.plot(t, C, 'b-', label="Model") # plotting model
-    plt.title("Improved Model", fontsize=20)
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
+    plt.title("best fit LPM model")
     ax.legend()
+    ax.legend(loc=2)
 
   
     fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
@@ -113,7 +119,7 @@ def what_ifs():
     t_forecast = np.arange(2020,2030,step=0.05) #10 year projection time
     #LPM_Model_forecast(t, b1, alpha, bc, tau, 0.1)
 
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
     # ax.errorbar(t0,c0,yerr=v,fmt='ro', label='data', markersize=2.2)
@@ -129,7 +135,9 @@ def what_ifs():
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
     
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
-    plt.title("Future scenarios for potential values of $dP_{MAR}$", fontsize=20)
+    plt.title("Edendale Aquifer LPM: different MAR pressures")
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
     ax.legend(loc=2)
     plt.savefig('Plots'+ os.sep +"what_if_scenarios.png")
     plt.close(fig)
@@ -150,7 +158,7 @@ def without_acs():
     bc = p[2]
     tau = p[3]
 
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
@@ -158,11 +166,14 @@ def without_acs():
     ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS') #model with ACS
     ax.legend(loc=2)
     
-    print(LPM_Model(t, b1, 1, bc, tau)[-1])
-    print(LPM_Model(t, *p)[-1])
     #printing 2020 concentration values to find difference in concentration with and without ACS
+    #print(LPM_Model(t, b1, 1, bc, tau)[-1])
+    #print(LPM_Model(t, *p)[-1])
+    
 
-    plt.title("Improved model compared to model without ACS parameter", fontsize=20)
+    plt.title("Edendale Aquifer LPM: with and without ACS")
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
     
     fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 200)
     plt.close(fig)
@@ -187,7 +198,7 @@ def what_ifs_uncertainty():
     t_forecast = np.arange(2019.99,2030,step=0.05)
 
     v=0.15
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     
     C = np.zeros(ps.shape[0])
@@ -225,7 +236,9 @@ def what_ifs_uncertainty():
     ax.plot([], [], 'b-', label='$dP_{MAR}$ = 0.10 MPa')
     ax.plot([], [], 'r-', label='$dP_{MAR}$ = 0.15 MPa')
     ax.legend(loc=2)
-    plt.title("Potential effects caused by different values of $dP_{MAR}$", fontsize=20)
+    plt.title("Edendale Aquifer LPM: with and without ACS")
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
     
     plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png")
     plt.close(fig)
@@ -244,7 +257,7 @@ def without_acs_uncertainty():
 
     ps = posterior_pars()[0]
 
-    fig = plt.figure(figsize=(20,10))
+    fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     
     v = 0.15
@@ -266,7 +279,9 @@ def without_acs_uncertainty():
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
     ax.legend()
-    plt.title("Uncertainty caused by lack of alpha parameter", fontsize=20)
+    plt.title("Edendale Aquifer LPM: With and Without ACS")
+    ax.set_xlabel('Time [yrs]')
+    ax.set_ylabel('Nitrate Concentration [mg/L]')
     
     fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi = 200)
     plt.close(fig)
@@ -302,7 +317,7 @@ def misfit_plot(old):
     f, ax2 = plt.subplots(1,1)
     ax2.plot(t0,misfit,'bx', label = 'Misfit')
     ax2.axhline(0., c='k', ls=':')
-    ax2.set_title('Best fit LPM model')
+    ax2.set_title('Misfit of Best fit LPM model')
     plt.ylabel('Concentration misfit (mg/L)')
     plt.xlabel('Time (Years)')
 
@@ -325,8 +340,8 @@ def alpha_distribution():
 
     """
     alpha_list = []
-    #looping through 100 iterations of posterior_pars() uncertainty values
-    for i in range(100):
+    #looping through 10 iterations of posterior_pars() uncertainty values
+    for i in range(10):
         ps = posterior_pars()[0]
         
         for j in range(ps.shape[0]):
