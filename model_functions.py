@@ -438,3 +438,4 @@ def confidence_int(data, name):
     ci = stats.norm.interval(0.9,loc = mean, scale = std)
     print(name)
     print(ci)
+    return ci

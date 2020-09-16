@@ -318,3 +318,24 @@ def misfit_plot(old):
     f.savefig('Plots'+ os.sep + file, dpi = 200)
     plt.close(f)
 
+def alpha_distribution():
+    alpha_list = []
+    for i in range(100):
+        ps = posterior_pars()[0]
+        
+        for j in range(ps.shape[0]):
+            alpha_list.append(ps[j][1])
+        
+    
+    ci = confidence_int(alpha_list, "The 90 percent confidence interval for alpha is: ")
+    f, ax = plt.subplots(1,1)
+    ax.hist(alpha_list, bins = 100, density = False)
+    ax.axvline(x=ci[0], color = 'r')
+    ax.axvline(x=ci[1], color = 'r', label = '90 percent confidence intervals')
+    plt.ylabel('Probability density')
+    plt.xlabel('Value of alpha')
+    ax.legend()
+    ax.set_title('Distribution of alpha parameters with a 90 percent confidence interval')
+    #plt.show()
+    f.savefig('Plots'+ os.sep + 'Alpha_distribution.png', dpi = 300)
+    plt.close(f)
