@@ -55,7 +55,7 @@ def initial_model():
     
     p = curve_fit(LPM_Model,t0,c0)[0] # solve model
     t = np.arange(1980,2020,step=0.05)
-    C = LPM_Model(t,*p)
+    C = LPM_Model(t,*p) 
 
     # plotting commands
     fig = plt.figure(figsize=(20,10))
@@ -101,17 +101,17 @@ def what_ifs():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
-    t = np.arange(1980,2020,step = 0.1)
+    t = np.arange(1980,2020,step = 0.1) #time until 2020
 
-    p = posterior_pars()[1]
+    p = posterior_pars()[1] #fixed parameters with no uncertainty
 
     b1 = p[0]
     alpha = p[1]
     bc = p[2]
     tau = p[3]
 
-    t_forecast = np.arange(2020,2030,step=0.05)
-    LPM_Model_forecast(t, b1, alpha, bc, tau, 0.1)
+    t_forecast = np.arange(2020,2030,step=0.05) #10 year projection time
+    #LPM_Model_forecast(t, b1, alpha, bc, tau, 0.1)
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
@@ -121,21 +121,16 @@ def what_ifs():
     #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
 
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-', label='$dP_{MAR}$ = 0.0 MPa')
-    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0)[-1])
-
+    
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-', label='$dP_{MAR}$ = 0.05 MPa')
-    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05)[-1])
-
+    
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-',label='$dP_{MAR}$ = 0.10 MPa' )
-    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1)[-1])
-
+    
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
-    #print(LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15)[-1])
-
+    
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
     plt.title("Future scenarios for potential values of $dP_{MAR}$", fontsize=20)
     ax.legend(loc=2)
-    #plt.show()
     plt.savefig('Plots'+ os.sep +"what_if_scenarios.png")
     plt.close(fig)
 
@@ -149,7 +144,6 @@ def without_acs():
     '''
     t = np.arange(1980,2020,step = 0.1)
 
-
     p = posterior_pars()[1]
 
     b1 = p[0]
@@ -160,15 +154,16 @@ def without_acs():
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
-    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS')
-    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS')
+    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS') #set alpha = 1 to nullify effect of ACS
+    ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS') #model with ACS
     ax.legend(loc=2)
     
     print(LPM_Model(t, b1, 1, bc, tau)[-1])
     print(LPM_Model(t, *p)[-1])
+    #printing 2020 concentration values to find difference in concentration with and without ACS
 
     plt.title("Improved model compared to model without ACS parameter", fontsize=20)
-    #plt.show()
+    
     fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 200)
     plt.close(fig)
 
@@ -186,7 +181,7 @@ def what_ifs_uncertainty():
 
     t_pos = np.arange(1980,2020.01,step = 0.05)
 
-    ps = posterior_pars()[0]
+    ps = posterior_pars()[0] #100 different parameter sets due to uncertainty
 
 
     t_forecast = np.arange(2019.99,2030,step=0.05)
@@ -194,28 +189,30 @@ def what_ifs_uncertainty():
     v=0.15
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    #ax.plot(t0x,c0, 'ro', label="data", markersize=2.5)
+    
     C = np.zeros(ps.shape[0])
 
+    #looping through all parameters in parameter set with uncertainty, finding all 2030 concentration values,
+    #then finding a confidence interval for the 2030 concentration values
     for pi in range(0,ps.shape[0]):
         C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
-    #confidence_int(C,'What If, NO MAR')
+    confidence_int(C,"0.00 MPa")
 
     for pi in range(0,ps.shape[0]):
         C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05), 'g-', lw=0.3)
-    #confidence_int(C,'What If, 0.05')
+    confidence_int(C,"0.05 MPa")
 
     for pi in range(0,ps.shape[0]):
         C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1), 'b-', lw=0.3)
-    #confidence_int(C,'What If, 0.1')
+    confidence_int(C,"0.10 MPa")
 
     for pi in range(0,ps.shape[0]):
         C[pi] =  LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15)[-1]
         ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15), 'r-', lw=0.3)
-    #confidence_int(C,'What if, 0.15')
+    confidence_int(C,"0.15 MPa")
 
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
@@ -229,7 +226,7 @@ def what_ifs_uncertainty():
     ax.plot([], [], 'r-', label='$dP_{MAR}$ = 0.15 MPa')
     ax.legend(loc=2)
     plt.title("Potential effects caused by different values of $dP_{MAR}$", fontsize=20)
-    #plt.show()
+    
     plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png")
     plt.close(fig)
 
@@ -249,7 +246,7 @@ def without_acs_uncertainty():
 
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111)
-    #ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
+    
     v = 0.15
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
     C = np.zeros(ps.shape[0])
@@ -264,13 +261,13 @@ def without_acs_uncertainty():
         C[pi] -= LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
-    #confidence_int(C,'With vs without ACS')
+    confidence_int(C,"2030 concentration values with vs without ACS")
    
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
     ax.legend()
     plt.title("Uncertainty caused by lack of alpha parameter", fontsize=20)
-    #plt.show()
+    
     fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi = 200)
     plt.close(fig)
 
@@ -319,7 +316,16 @@ def misfit_plot(old):
     plt.close(f)
 
 def alpha_distribution():
+    """
+    Produces a histogram, with bounds for the 90 percent confidence interval for parameter alpha
+
+    Notes: 
+    ----------
+    No parameters take, calls other functions. Prints confidence interval of alpha to screen
+
+    """
     alpha_list = []
+    #looping through 100 iterations of posterior_pars() uncertainty values
     for i in range(100):
         ps = posterior_pars()[0]
         
@@ -327,9 +333,10 @@ def alpha_distribution():
             alpha_list.append(ps[j][1])
         
     
-    ci = confidence_int(alpha_list, "The 90 percent confidence interval for alpha is: ")
+    ci = confidence_int(alpha_list, "alpha") #confidence interval for alpha
     f, ax = plt.subplots(1,1)
-    ax.hist(alpha_list, bins = 100, density = False)
+    #plotting histogram and 90 percent conf int for alpha
+    ax.hist(alpha_list, bins = 100, density = True)
     ax.axvline(x=ci[0], color = 'r')
     ax.axvline(x=ci[1], color = 'r', label = '90 percent confidence intervals')
     plt.ylabel('Probability density')

@@ -10,6 +10,7 @@ from testing_functions import *
 from plotting_functions import *
 
 # Plotting the data
+without_acs_uncertainty()
 plot_data()
 
 # unit tests

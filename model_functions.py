@@ -428,14 +428,29 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     
     return C_interp
 
-def confidence_int(data, name): 
+def confidence_int(data, value): 
     '''
     Computes and prints a 90% confidence interval for the data
+
+    Parameters:
+    ----------
+    data: array-like
+        Data set for which to find  90% confidence interval for
+    value: float
+        Value/quantity/parameter calculating confidence interval for
+
+    Returns:
+    ----------
+    ci: array-like
+        The upper and lower bounds of the 90 percent confidence interval
+
+    Notes:
+        Prints confidence interval to screen
     '''
 
-    std = np.std(data)
+    std = np.std(data) #mean and standard deviation
     mean = np.mean(data)
     ci = stats.norm.interval(0.9,loc = mean, scale = std)
-    print(name)
-    print(ci)
+    print("The 90 percent confidence interval for " + str(value), "is: ", ci) #printing 90 percent conf int
+    
     return ci
