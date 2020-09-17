@@ -338,7 +338,6 @@ def concentration_benchmark2():
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
 
-
 def test_solvedPdt():
     '''
     Testing the solve_dPdt functions with the simplified dPdt equation
@@ -347,16 +346,39 @@ def test_solvedPdt():
     t = np.arange(2000,2020,1)
 
     test_1=solve_dPdt(dPdt_simplified, t)
-    print(test_1)
+    for i in range(len(t)):
+        # Simplified function causes all P values to be 0
+        assert(test_1[i]==0)
 
     print("solve_dPdt tests passed \n")
-
-test_solvedPdt()
 
 def test_solvedCdt():
     '''
     Testing the solve_dCdt functions with the simplified dCdt equation
     '''
+    # Creating a time range to run through function
+    t = np.arange(2000,2015,0.5)
 
+    # Set parameters
+    b1=1
+    alpha=0
+    bc=1
+    tau = 0
+    
+    # Calculate P to input
+    P = solve_dPdt(dPdt_simplified,t)
+
+    # Test with negative cows
+    test_1=solve_dCdt(dCdt_simplified,t,P,b1,alpha,bc,tau)
+    for i in range(len(t)):
+        assert(test_1[i]==((100/np.exp(-49.5))*np.exp(-0.025*t[i])-100))
+    
+
+    # Test with positive cows
+    test_2=solve_dCdt(dCdt_simplified1,t,P,b1,alpha,bc,tau)
+    for i in range(len(t)):
+        assert(test_2[i]==((-499/5)*np.exp((-t[i]+1980)/20) + 100))
 
     print("solve_dCdt tests passed \n")
+
+test_solvedCdt()
