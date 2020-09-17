@@ -28,7 +28,7 @@ def plot_data():
     ax = fig1.add_subplot(111)
    
     ax.plot(x_cow, y_cow, color = 'red', label = 'Cows')  # plotting cow data
-    ax.set_xlabel('Years', fontsize = 20)
+    ax.set_xlabel('Time [yrs]', fontsize = 20)
     ax.set_ylabel('Number of Cows', fontsize = 20)
 
     ax2 = ax.twinx()
@@ -289,6 +289,12 @@ def without_acs_uncertainty():
 def misfit_plot(old):
     '''
     Produces a misfit plot
+
+    Parameters
+    ----------
+    old: bool
+        If intial is true will plot misfit of old model, otherwise will plot misfit
+        of improved model
     '''
 
     t = np.arange(1980,2030,step = 0.1)
@@ -302,14 +308,12 @@ def misfit_plot(old):
     C = LPM_Model(t,*parameters)
 
 
-    # Producing misfit plot
-    # Pre-allocating array
-    misfit=[]
+    misfit=[] # stores misfit values
 
     # Interpolate concentration at data points for model
     C=np.interp(t0,t,C)
 
-    # Append differences to misfit array
+    # Calculate misfits
     for i in range(len(C)):
         misfit.append(c0[i]-C[i])
 
@@ -337,7 +341,6 @@ def alpha_distribution():
     Notes: 
     ----------
     No parameters take, calls other functions. Prints confidence interval of alpha to screen
-
     """
     alpha_list = []
     #looping through 10 iterations of posterior_pars() uncertainty values
@@ -350,14 +353,16 @@ def alpha_distribution():
     
     ci = confidence_int(alpha_list, "alpha") #confidence interval for alpha
     f, ax = plt.subplots(1,1)
+
     #plotting histogram and 90 percent conf int for alpha
-    ax.hist(alpha_list, bins = 100, density = True)
+    ax.hist(alpha_list, bins = 30, density = True)
     ax.axvline(x=ci[0], color = 'r')
-    ax.axvline(x=ci[1], color = 'r', label = '90 percent confidence intervals')
-    plt.ylabel('Probability density')
-    plt.xlabel('Value of alpha')
+    ax.axvline(x=ci[1], color = 'r', label = '90 percent confidence interval')
+    plt.ylabel('Probability Density')
+    plt.xlabel('Alpha')
     ax.legend()
-    ax.set_title('Distribution of alpha parameters with a 90 percent confidence interval')
+    ax.set_title('Posterior Distribution of Alpha Parameter')
+
     #plt.show()
     f.savefig('Plots'+ os.sep + 'Alpha_distribution.png', dpi = 300)
     plt.close(f)

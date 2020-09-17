@@ -377,4 +377,3 @@ def test_solvedCdt():
 
     print("solve_dCdt tests passed \n")
 
-test_solvedCdt()
