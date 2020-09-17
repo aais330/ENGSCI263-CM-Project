@@ -104,9 +104,31 @@ def test_dCdt():
 
     print("dCdt tests passed \n")
 
+def test_solvedPdt():
+    '''
+    Testing the solve_dPdt functions with the simplified dPdt equation
+    '''
+    # Creating a time range to run through function
+    t = np.arange(2000,2020,1)
+
+    test_1=solve_dPdt(dPdt_simplified, t)
+    print(test_1)
+
+    print("solve_dPdt tests passed \n")
+
+test_solvedPdt()
+
+def test_solvedCdt():
+    '''
+    Testing the solve_dCdt functions with the simplified dCdt equation
+    '''
+
+
+    print("solve_dCdt tests passed \n")
+
 def convergence_analysis():
     '''
-    sergence analysis for our model.
+    Convergence analysis for our model.
     This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
     a variety of stepsizes.
     '''
@@ -144,7 +166,7 @@ def convergence_analysis():
 # Benchmarking functions
 # Theses functions benchmark the two ODEs formulated in the model_functions script
 
-# Simplfied pressure ODE
+# Simplified pressure ODE
 def dPdt_simplified(P, t):
     '''
     This function simplifies the pressure model for benchmarking
