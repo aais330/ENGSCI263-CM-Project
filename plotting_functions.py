@@ -107,6 +107,8 @@ def what_ifs():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
+    t_mas = np.arange(1980,2030,step = 0.1)
+    MAS = [11.3]*len(t_mas)
     t = np.arange(1980,2020,step = 0.1) #time until 2020
 
     p = posterior_pars()[1] #fixed parameters with no uncertainty
@@ -135,6 +137,7 @@ def what_ifs():
     ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
     
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
+    ax.plot(t_mas, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     plt.title("Edendale Aquifer LPM: different MAR pressures")
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
@@ -150,7 +153,9 @@ def without_acs():
     ------
     Saves the plot in file 'without_acs.png'
     '''
+    
     t = np.arange(1980,2020,step = 0.1)
+    MAS = [11.3]*len(t)
 
     p = posterior_pars()[1]
 
@@ -164,6 +169,7 @@ def without_acs():
 
     ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS') #set alpha = 1 to nullify effect of ACS
     ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS') #model with ACS
+    ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     ax.legend(loc=2)
     
     #printing 2020 concentration values to find difference in concentration with and without ACS
@@ -189,7 +195,8 @@ def what_ifs_uncertainty():
     ------
     Saves the plot in file 'what_if_scenarios.png'
     '''
-
+    t = np.arange(1980,2030,step = 0.1)
+    MAS = [11.3]*len(t)
     t_pos = np.arange(1980,2020.01,step = 0.05)
 
     ps = posterior_pars()[0] #100 different parameter sets due to uncertainty
@@ -229,6 +236,7 @@ def what_ifs_uncertainty():
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
+    ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
 
     ax.plot([], [], 'k-', label='posterior samples')
     ax.plot([], [], 'm-', label='$dP_{MAR}$ = 0.0 MPa')
@@ -252,7 +260,8 @@ def without_acs_uncertainty():
     ------
     Saves the plot in file 'without_acs_uncertainty.png'
     '''
-
+    t = np.arange(1980,2030,step = 0.1)
+    MAS = [11.3]*len(t)
     t_pos = np.arange(1980,2020,step = 0.1)
 
     ps = posterior_pars()[0]
@@ -278,6 +287,7 @@ def without_acs_uncertainty():
    
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
+    ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     ax.legend()
     plt.title("Edendale Aquifer LPM: With and Without ACS")
     ax.set_xlabel('Time [yrs]')
@@ -359,5 +369,5 @@ def alpha_distribution():
     ax.legend()
     ax.set_title('Distribution of alpha parameters with a 90 percent confidence interval')
     #plt.show()
-    f.savefig('Plots'+ os.sep + 'Alpha_distribution.png', dpi = 300)
+    f.savefig('Plots'+ os.sep + 'alpha_distribution.png', dpi = 300)
     plt.close(f)
