@@ -39,7 +39,7 @@ def plot_data():
     ax.plot([],[], 'b', label='Nitrate Concentration')
     ax.legend()
 
-    fig1.savefig('Plots'+ os.sep +'nc_data.png', dpi = 200)
+    fig1.savefig('Plots'+ os.sep +'nc_data.png', dpi = 500)
     plt.close(fig1)
 
 
@@ -68,7 +68,7 @@ def initial_model():
     ax.legend()
     ax.legend(loc=2)
 
-    fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'initial_model.png', dpi = 500)
     plt.close(fig)
 
 def improved_model():
@@ -95,7 +95,7 @@ def improved_model():
     ax.legend(loc=2)
 
   
-    fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'improved_model.png', dpi = 500)
     plt.close(fig)
 
 
@@ -142,7 +142,7 @@ def what_ifs():
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
     ax.legend(loc=2)
-    plt.savefig('Plots'+ os.sep +"what_if_scenarios.png")
+    plt.savefig('Plots'+ os.sep +"what_if_scenarios.png", dpi = 500)
     plt.close(fig)
 
 def without_acs():
@@ -181,7 +181,7 @@ def without_acs():
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
     
-    fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'without_acs.png', dpi = 500)
     plt.close(fig)
 
 
@@ -248,7 +248,7 @@ def what_ifs_uncertainty():
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
     
-    plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png")
+    plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png", dpi = 500)
     plt.close(fig)
 
 def without_acs_uncertainty():
@@ -293,7 +293,7 @@ def without_acs_uncertainty():
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
     
-    fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi = 200)
+    fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi =500)
     plt.close(fig)
 
 def misfit_plot(old):
@@ -341,7 +341,7 @@ def misfit_plot(old):
         file = 'misfit_plot_new_model'
 
     #plt.show()
-    f.savefig('Plots'+ os.sep + file, dpi = 200)
+    f.savefig('Plots'+ os.sep + file, dpi = 500)
     plt.close(f)
 
 def alpha_distribution():
@@ -374,5 +374,5 @@ def alpha_distribution():
     ax.set_title('Posterior Distribution of Alpha Parameter')
 
     #plt.show()
-    f.savefig('Plots'+ os.sep + 'alpha_distribution.png', dpi = 300)
+    f.savefig('Plots'+ os.sep + 'alpha_distribution.png', dpi = 500)
     plt.close(f)
