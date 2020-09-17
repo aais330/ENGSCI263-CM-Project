@@ -4,7 +4,7 @@
 This project was made to model the concentration of nitrate in the Southland aquifers. We calibrated our model to fit the data as closely as possible and then accounted for the uncertainty in the parameters. We then made predictions of the future using different combinations of sets of parameters.
 
 # Recommendation
-Based on the predictions made, we make a recommendation on whether an active carbon sink should ssbe used or if the managed aquifer recharge should be implemented.
+Based on the predictions made, we make a recommendation on whether an active carbon sink should be used or if the managed aquifer recharge should be implemented.
 
 # Installation
 main model - main.py
