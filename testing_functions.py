@@ -106,38 +106,34 @@ def test_dCdt():
 
 def convergence_analysis():
     '''
-    sergence analysis for our model.
-    This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
-    a variety of stepsizes.
+    Produces a convergence analysis plot for our LPM model.
+
+    Notes
+    -----
+    saves figure as convergence.png
+    
     '''
 
-    # Pre-allocating solutions array
-    sols = []
-    # Creating stepsizes array
-    step_sizes = np.arange(0.05,2.05,0.1)
-
-    # Get the parameters for the model
+    hsteps = 1/(np.linspace(0.4,20,20)) # step size vector
     pars = posterior_pars()[1]
+    C_final = [] # solution vector
 
-    for step in step_sizes:
-        # time range with step size
-        t = np.arange(1980, 2020, step)
-        # Get the concentration model
-        C = LPM_Model(t, *pars)
-        # Interpolate model at chosen year
-        C = np.interp(2016, t, C)
-        # add solution at each step size to array
-        sols.append(C)
+    # Solve model for a range of step sizes
+    for h in hsteps:
+        t = np.arange(1980,2020,h)
+        P = solve_dPdt(dPdt,t)
+        C = solve_dCdt(dCdt,t,P,*pars)
+        C_final.append(np.interp(2016, t, C))
   
-    # Plot the graph
+    # Produce convergence analysis plot
     fig2 = plt.figure()
     ax2 = fig2.add_subplot(111)
-    ax2.plot(1/step_sizes, sols, 'mo--', label = 'Nitrate concentration in 2016')
+    ax2.plot(1/hsteps, C_final, 'bo--', label = 'Nitrate concentration in 2016')
     ax2.legend() 
-    ax2.set_title('Convergence of nitrate concentration step sizes')
-    ax2.set_xlabel('Step size (1/h)')
+    ax2.set_title('Convergence Analysis for LPM Model')
+    ax2.set_xlabel('1/step size')
     ax2.set_ylabel('Nitrate Concentration in 2016')
-    # plt.show()
+    #plt.show()
     fig2.savefig('Plots'+ os.sep + 'convergence.png')
     plt.close(fig2)
 

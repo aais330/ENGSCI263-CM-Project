@@ -9,6 +9,7 @@ from model_functions import *
 from testing_functions import *
 from plotting_functions import *
 
+convergence_analysis()
 # Plotting the data
 plot_data()
 
