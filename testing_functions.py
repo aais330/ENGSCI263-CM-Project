@@ -104,28 +104,6 @@ def test_dCdt():
 
     print("dCdt tests passed \n")
 
-def test_solvedPdt():
-    '''
-    Testing the solve_dPdt functions with the simplified dPdt equation
-    '''
-    # Creating a time range to run through function
-    t = np.arange(2000,2020,1)
-
-    test_1=solve_dPdt(dPdt_simplified, t)
-    print(test_1)
-
-    print("solve_dPdt tests passed \n")
-
-test_solvedPdt()
-
-def test_solvedCdt():
-    '''
-    Testing the solve_dCdt functions with the simplified dCdt equation
-    '''
-
-
-    print("solve_dCdt tests passed \n")
-
 def convergence_analysis():
     '''
     Convergence analysis for our model.
@@ -360,3 +338,25 @@ def concentration_benchmark2():
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
 
+
+def test_solvedPdt():
+    '''
+    Testing the solve_dPdt functions with the simplified dPdt equation
+    '''
+    # Creating a time range to run through function
+    t = np.arange(2000,2020,1)
+
+    test_1=solve_dPdt(dPdt_simplified, t)
+    print(test_1)
+
+    print("solve_dPdt tests passed \n")
+
+test_solvedPdt()
+
+def test_solvedCdt():
+    '''
+    Testing the solve_dCdt functions with the simplified dCdt equation
+    '''
+
+
+    print("solve_dCdt tests passed \n")
