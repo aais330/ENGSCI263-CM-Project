@@ -106,7 +106,14 @@ def test_dCdt():
 
 def convergence_analysis():
     '''
+<<<<<<< HEAD
     Produces a convergence analysis plot for our LPM model.
+=======
+    Convergence analysis for our model.
+    This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
+    a variety of stepsizes.
+    '''
+>>>>>>> abae59987fbdf956f972c46f03c432cea005776f
 
     Notes
     -----
@@ -140,7 +147,7 @@ def convergence_analysis():
 # Benchmarking functions
 # Theses functions benchmark the two ODEs formulated in the model_functions script
 
-# Simplfied pressure ODE
+# Simplified pressure ODE
 def dPdt_simplified(P, t):
     '''
     This function simplifies the pressure model for benchmarking
@@ -334,3 +341,47 @@ def concentration_benchmark2():
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
 
+def test_solvedPdt():
+    '''
+    Testing the solve_dPdt functions with the simplified dPdt equation
+    '''
+    # Creating a time range to run through function
+    t = np.arange(2000,2020,1)
+
+    test_1=solve_dPdt(dPdt_simplified, t)
+    for i in range(len(t)):
+        # Simplified function causes all P values to be 0
+        assert(test_1[i]==0)
+
+    print("solve_dPdt tests passed \n")
+
+def test_solvedCdt():
+    '''
+    Testing the solve_dCdt functions with the simplified dCdt equation
+    '''
+    # Creating a time range to run through function
+    t = np.arange(2000,2015,0.5)
+
+    # Set parameters
+    b1=1
+    alpha=0
+    bc=1
+    tau = 0
+    
+    # Calculate P to input
+    P = solve_dPdt(dPdt_simplified,t)
+
+    # Test with negative cows
+    test_1=solve_dCdt(dCdt_simplified,t,P,b1,alpha,bc,tau)
+    for i in range(len(t)):
+        assert(test_1[i]==((100/np.exp(-49.5))*np.exp(-0.025*t[i])-100))
+    
+
+    # Test with positive cows
+    test_2=solve_dCdt(dCdt_simplified1,t,P,b1,alpha,bc,tau)
+    for i in range(len(t)):
+        assert(test_2[i]==((-499/5)*np.exp((-t[i]+1980)/20) + 100))
+
+    print("solve_dCdt tests passed \n")
+
+test_solvedCdt()
