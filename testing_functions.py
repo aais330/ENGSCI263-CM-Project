@@ -106,14 +106,7 @@ def test_dCdt():
 
 def convergence_analysis():
     '''
-<<<<<<< HEAD
     Produces a convergence analysis plot for our LPM model.
-=======
-    Convergence analysis for our model.
-    This function finds the optimal step size for the time array in our model by testing the model at 2016 with 
-    a variety of stepsizes.
-    '''
->>>>>>> abae59987fbdf956f972c46f03c432cea005776f
 
     Notes
     -----
