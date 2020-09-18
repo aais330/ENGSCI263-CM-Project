@@ -260,9 +260,8 @@ def without_acs_uncertainty():
     ------
     Saves the plot in file 'without_acs_uncertainty.png'
     '''
-    t = np.arange(1980,2030,step = 0.1)
-    MAS = [11.3]*len(t)
     t_pos = np.arange(1980,2020,step = 0.1)
+    MAS = [11.3]*len(t_pos)
 
     ps = posterior_pars()[0]
 
@@ -280,7 +279,6 @@ def without_acs_uncertainty():
 
     # With ACS
     for pi in range(0,ps.shape[0]):
-        C[pi] -= LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
     confidence_int(C,"2030 concentration values with vs without ACS")
