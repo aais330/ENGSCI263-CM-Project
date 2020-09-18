@@ -1,5 +1,5 @@
 ######################################################################
-# This scipt generates all the related figures for the nitrate
+# This script generates all the related figures for the nitrate
 # leaching project Team 12:
 # Anton Aish, Jenny Choi, William Laughton, Annie Li, Sidharth Varma
 ######################################################################
@@ -17,6 +17,8 @@ plot_data()
 test_ie() 
 test_dPdt()
 test_dCdt()
+test_solvedCdt()
+test_solvedPdt()
 
 
 # Convergence Analysis
