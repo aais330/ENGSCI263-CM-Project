@@ -45,7 +45,7 @@ def test_ie():
 def test_dPdt():
     '''
     Unit tests for the pressure model.
-    These tests check the edge cases of the if statements in the pressure differential equation function. 
+    These tests check the edge cases of the if statements in the pressure differential equation. 
     '''
 
     # t < t_mar before t_mar
@@ -111,7 +111,6 @@ def convergence_analysis():
     Notes
     -----
     saves figure as convergence.png
-    
     '''
 
     hsteps = 1/(np.linspace(0.4,20,20)) # step size vector
@@ -139,7 +138,6 @@ def convergence_analysis():
 
 # Benchmarking functions
 # Theses functions benchmark the two ODEs formulated in the model_functions script
-
 # Simplified pressure ODE
 def dPdt_simplified(P, t):
     '''
@@ -300,7 +298,7 @@ def concentration_benchmark1():
 
 def concentration_benchmark2(): 
     '''
-    Benchmarking solution for concentration model with constant 100 cows
+    Benchmarking solution for concentration model with constant cows population of 100
     ''' 
 
     t = np.arange(1980,2020,0.5)

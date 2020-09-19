@@ -53,9 +53,9 @@ def initial_model():
     Saves the plot in file 'initial_model.png'
     '''
     
-    p = curve_fit(LPM_Model,t0,c0)[0] # solve model
+    p = curve_fit(LPM_Model,t0,c0)[0] # solve model for model parameters
     t = np.arange(1980,2020,step=0.05)
-    C = LPM_Model(t,*p) 
+    C = LPM_Model(t,*p) # solve LPM model
 
     # plotting commands
     fig = plt.figure(figsize=(10,6))
@@ -81,7 +81,7 @@ def improved_model():
     '''
     p = posterior_pars()[1] # find improved parameters
     t = np.arange(1980,2020,step=0.05)
-    C = LPM_Model(t,*p) 
+    C = LPM_Model(t,*p) # solve LPM model
 
     # plotting commands
     fig = plt.figure(figsize=(10,6))
@@ -108,40 +108,39 @@ def what_ifs():
     Saves the plot in file 'what_if_scenarios.png'
     '''
     t_mas = np.arange(1980,2030,step = 0.1)
-    MAS = [11.3]*len(t_mas)
-    t = np.arange(1980,2020,step = 0.1) #time until 2020
+    MAS = [11.3]*len(t_mas) # maximum allowable value of nitrate
+    t = np.arange(1980,2020,step = 0.1) 
 
-    p = posterior_pars()[1] #fixed parameters with no uncertainty
+    p = posterior_pars()[1] #best fit parameters
 
     b1 = p[0]
     alpha = p[1]
     bc = p[2]
     tau = p[3]
 
-    t_forecast = np.arange(2020,2030,step=0.05) #10 year projection time
-    #LPM_Model_forecast(t, b1, alpha, bc, tau, 0.1)
+    t_forecast = np.arange(2020,2030,step=0.05) # forecast period
 
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
-    # ax.errorbar(t0,c0,yerr=v,fmt='ro', label='data', markersize=2.2)
 
-    #ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Forecast best-fit', alpha=0.5)
-
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.0), 'm-', label='$dP_{MAR}$ = 0.0 MPa')
+   
+    MAR_Pressures = np.array([0,0.05,0.10,0.15]) # Different MAR pressures
+    MAR_colours = ['m-','g-','b-','r-'] # Colours for each MAR pressure
     
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.05), 'g-', label='$dP_{MAR}$ = 0.05 MPa')
+    # plot nitrate concentration forecasts for different MAR pressures
+    for i in range(0,len(MAR_Pressures)):
+        lab = '$dP_{MAR}$ ' + str(MAR_Pressures) + ' MPa'
+        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, MAR_Pressures[i]), MAR_colours[i], label=lab)
     
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.1), 'b-',label='$dP_{MAR}$ = 0.10 MPa' )
-    
-    ax.plot(t_forecast, LPM_Model_forecast(t_forecast, b1, alpha, bc, tau, 0.15), 'r-', label='$dP_{MAR}$ = 0.15 MPa')
-    
+    # add labels and legend
     ax.plot(t, LPM_Model_forecast(t, b1, alpha, bc, tau, 0), 'k-', label='Best-fit model')
     ax.plot(t_mas, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     plt.title("Edendale Aquifer LPM: different MAR pressures")
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
     ax.legend(loc=2)
+
     plt.savefig('Plots'+ os.sep +"what_if_scenarios.png", dpi = 500)
     plt.close(fig)
 
@@ -155,27 +154,19 @@ def without_acs():
     '''
     
     t = np.arange(1980,2020,step = 0.1)
-    MAS = [11.3]*len(t)
+    MAS = [11.3]*len(t) # maximum allowable value of nitrate
 
-    p = posterior_pars()[1]
+    p = posterior_pars()[1] # best fit parameters
 
-    b1 = p[0]
-    bc = p[2]
-    tau = p[3]
-
+    # plotting commands
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     ax.plot(t0,c0, 'ro', label="Data", markersize=2.5)
 
-    ax.plot(t, LPM_Model(t, b1, 1, bc, tau), 'g-', label='Forecast without ACS') #set alpha = 1 to nullify effect of ACS
+    ax.plot(t, LPM_Model(t, p[0], 1, p[2], p[3]), 'g-', label='Forecast without ACS') #set alpha = 1 to nullify effect of ACS
     ax.plot(t, LPM_Model(t, *p), 'k-', label='Forecast with ACS') #model with ACS
     ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     ax.legend(loc=2)
-    
-    #printing 2020 concentration values to find difference in concentration with and without ACS
-    #print(LPM_Model(t, b1, 1, bc, tau)[-1])
-    #print(LPM_Model(t, *p)[-1])
-    
 
     plt.title("Edendale Aquifer LPM: with and without ACS")
     ax.set_xlabel('Time [yrs]')
@@ -196,48 +187,39 @@ def what_ifs_uncertainty():
     Saves the plot in file 'what_if_scenarios.png'
     '''
     t = np.arange(1980,2030,step = 0.1)
-    MAS = [11.3]*len(t)
-    t_pos = np.arange(1980,2020.01,step = 0.05)
+    MAS = [11.3]*len(t) # maximum allowable value of nitrate 
+    t_forecast = np.arange(2019.99,2030,step=0.1) # forecast time period
 
-    ps = posterior_pars()[0] #100 different parameter sets due to uncertainty
+    ps = posterior_pars()[0] # 100 different parameter sets due to uncertainty
 
-
-    t_forecast = np.arange(2019.99,2030,step=0.05)
-
-    v=0.15
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     
+    MAR_Pressures = np.array([0,0.05,0.10,0.15]) # Different MAR pressures
+    MAR_colours = ['m-','g-','b-','r-'] # Colours for each MAR pressure
+    C_final = np.zeros(ps.shape[0])
     C = np.zeros(ps.shape[0])
 
-    #looping through all parameters in parameter set with uncertainty, finding all 2030 concentration values,
-    #then finding a confidence interval for the 2030 concentration values
-    for pi in range(0,ps.shape[0]):
-        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
-        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'm-', lw=0.3)
-    confidence_int(C,"0.00 MPa")
+    # plotting 100 alternative models forecasts for each MAR pressure and generating a nitrate concentration confidence interval
+    for i in range(0,MAR_Pressures.shape[0]):
 
-    for pi in range(0,ps.shape[0]):
-        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05)[-1]
-        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.05), 'g-', lw=0.3)
-    confidence_int(C,"0.05 MPa")
+        for pi in range(0,ps.shape[0]):
+                C = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],MAR_Pressures[i])
+                C_final[pi] = C[-1]
+                ax.plot(t_forecast,C,MAR_colours[i],lw=0.3)
 
-    for pi in range(0,ps.shape[0]):
-        C[pi] = LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1)[-1]
-        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.1), 'b-', lw=0.3)
-    confidence_int(C,"0.10 MPa")
+        confidence_int(C,str(MAR_Pressures)+' MPa')
 
-    for pi in range(0,ps.shape[0]):
-        C[pi] =  LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15)[-1]
-        ax.plot(t_forecast, LPM_Model_forecast(t_forecast, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0.15), 'r-', lw=0.3)
-    confidence_int(C,"0.15 MPa")
-
+    # plotting 100 alternative models before forecast
+    t_pos = np.arange(1980,2020.01,step = 0.1)
     for pi in range(0,ps.shape[0]):
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
-
+    
+    v=0.15
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
     ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
 
+    # adding legend
     ax.plot([], [], 'k-', label='posterior samples')
     ax.plot([], [], 'm-', label='$dP_{MAR}$ = 0.0 MPa')
     ax.plot([], [], 'g-', label='$dP_{MAR}$ = 0.05 MPa')
@@ -247,7 +229,7 @@ def what_ifs_uncertainty():
     plt.title("Edendale Aquifer LPM: with and without ACS")
     ax.set_xlabel('Time [yrs]')
     ax.set_ylabel('Nitrate Concentration [mg/L]')
-    
+
     plt.savefig('Plots'+ os.sep +"what_if_uncertainty.png", dpi = 500)
     plt.close(fig)
 
@@ -260,15 +242,15 @@ def without_acs_uncertainty():
     ------
     Saves the plot in file 'without_acs_uncertainty.png'
     '''
-    t_pos = np.arange(1980,2020,step = 0.1)
+    t_pos = np.arange(1980,2020,step = 0.1) # time array to solve LPM model at
     MAS = [11.3]*len(t_pos)
 
-    ps = posterior_pars()[0]
+    ps = posterior_pars()[0] # sets of possible parameter values
 
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111)
     
-    v = 0.15
+    v = 0.15 # standard deviation of data
     ax.errorbar(t0,c0,yerr=v,fmt='ro', label='Data', markersize=2.5)
     C = np.zeros(ps.shape[0])
 
@@ -283,9 +265,10 @@ def without_acs_uncertainty():
 
     confidence_int(C,"2030 concentration values with vs without ACS")
    
+    # Adding labels and legend
     ax.plot([],[], 'k-', label = 'With ACS')
     ax.plot([],[], 'g-', label = 'Without ACS')
-    ax.plot(t, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
+    ax.plot(t_pos, MAS, 'k--', alpha = 0.7, label='Maximum acceptable standard')
     ax.legend()
     plt.title("Edendale Aquifer LPM: With and Without ACS")
     ax.set_xlabel('Time [yrs]')
@@ -294,6 +277,7 @@ def without_acs_uncertainty():
     fig.savefig('Plots'+ os.sep +'without_acs_uncertainty.png', dpi =500)
     plt.close(fig)
 
+
 def misfit_plot(old):
     '''
     Produces a misfit plot
@@ -301,7 +285,7 @@ def misfit_plot(old):
     Parameters
     ----------
     old: bool
-        If intial is true will plot misfit of old model, otherwise will plot misfit
+        If old is true will plot misfit of intial model, otherwise will plot misfit
         of improved model
     '''
 

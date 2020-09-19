@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 from matplotlib import pyplot as plt
 from scipy import stats
 
-# Data used in multiple functions
+# Cow and nitrate concentration data
 tn, n = np.genfromtxt("Data"+ os.sep +'nl_cows.txt', delimiter=',', skip_header=1).T
 t0, c0 = np.genfromtxt("Data"+ os.sep +'nl_n.csv', delimiter=',', skip_header=1).T
 
@@ -202,8 +202,8 @@ def LPM_Model(t, b1, alpha, bc, tau):
         Array of concentration values in the aquifer corresponding to times in input array t
     '''
     
-    # intialise time values to solve for concentration
-    tv = np.arange(1980,2030,step = 0.1)
+
+    tv = np.arange(1980,2030,step = 0.1) # time array to solve for concentration
       
     # Solve pressure ODE
     P = solve_dPdt(dPdt,tv)
@@ -229,7 +229,7 @@ def posterior_pars():
     
     Notes
     -----
-    Utilises other functions in the same file and requires no inputs
+    parameter values are found using built-in curve_fit function
     '''
 
     sigma = [0.15]*len(c0) # uncertainty in data
@@ -237,8 +237,7 @@ def posterior_pars():
     # calibrating model to data and creating covariance matrix
     p, cov = curve_fit(LPM_Model,t0,c0, sigma = sigma,bounds=((0,0,0,0.5),(1e-04,np.inf,np.inf,np.inf)), absolute_sigma=True)
     
-    #cov = 0.04*cov
-    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated pars
+    pos = np.random.multivariate_normal(p, cov, 100) # random variates of the calibrated parameters
     
     return pos, p
 
@@ -270,8 +269,6 @@ def dPdt_forecast(P, t, dP_Mar):
 
     if (t>=t_mar):
         dP_a1  += dP_Mar # Pressure increase at high pressure boundary due to MAR
-
-
         
     return -1*(P + dP_a/2) -1*(P-dP_a1/2)
 
@@ -309,7 +306,7 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
     t_mar = 2020 # Time when MAR begins
     t_acs = 2010 # Time active carbon sink was installed
     
-    ni = np.interp((t-tau),tn,n) #interpolating number of cows
+    ni = np.interp((t-tau),tn,n) # interpolating number of cows
   
     # Active carbon sink
     if ((t-tau)>t_acs):
@@ -317,7 +314,7 @@ def dCdt_forecast(ci, t, P, b1, alpha, bc, tau, dP_Mar):
 
     # MAR
     if (t>t_mar):
-        dP_a += dP_Mar # Pressure difference increaseat high pressure due to MAR
+        dP_a += dP_Mar # Pressure difference increase high pressure due to MAR
              
     return  -ni*b1*(P-dP_surf)+bc*ci*(P-(dP_a/2))
 
@@ -354,7 +351,7 @@ def solve_dPdt_forecast(f, t, dP_Mar):
 
 def solve_dCdt_forecast(f,t,P, b1, alpha, bc, tau, dP_Mar):
     '''
-    Solves the ODE for nitrate concentration within the aquifer with managed aquifer recharge
+    Solves the ODE for nitrate concentration within the aquifer with managed aquifer recharge 
 
     Parameters:
     -----------
@@ -407,20 +404,17 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
         time lag
     dP_Mar: float
         MAR induced pressure difference
+
     Returns
     -------
- 
     C : array-like
         array of concentration values in the aquifer corresponding to times in input array t 
     '''
     
-    
-    #Define tv
-    tv = np.arange(1980,2030,step = 0.1)
 
-    P = solve_dPdt_forecast(dPdt_forecast,tv,dP_Mar)
+    tv = np.arange(1980,2030,step = 0.1) # time array of to solve for concentration
 
-    # Solve concentration ODE 
+    P = solve_dPdt_forecast(dPdt_forecast,tv,dP_Mar) 
     C = solve_dCdt_forecast(dCdt_forecast,tv,P,b1,alpha,bc,tau, dP_Mar)
 
     # interpolate concentration at times corresponding to the times in input array t
@@ -428,7 +422,7 @@ def LPM_Model_forecast(t,b1,alpha, bc,tau, dP_Mar):
     
     return C_interp
 
-def confidence_int(data, value): 
+def confidence_int(data, message): 
     '''
     Computes and prints a 90% confidence interval for the data
 
@@ -436,21 +430,24 @@ def confidence_int(data, value):
     ----------
     data: array-like
         Data set for which to find  90% confidence interval for
-    value: float
-        Value/quantity/parameter calculating confidence interval for
+    message: string
+        string that describes confidence interval
+        
 
     Returns:
     ----------
-    ci: array-like
-        The upper and lower bounds of the 90 percent confidence interval
+    ci: 2 element tuple
+        lower and upper bounds of confidence interval
+        
 
     Notes:
-        Prints confidence interval to screen
+    ------
+        Prints confidence interval to screen with message
     '''
 
     std = np.std(data) #mean and standard deviation
     mean = np.mean(data)
     ci = stats.norm.interval(0.9,loc = mean, scale = std)
-    print("The 90 percent confidence interval for " + str(value), "is: ", ci) #printing 90 percent conf int
+    print("The 90 percent confidence interval for " + message, "is: ", ci) #printing confidence interval
     
     return ci
