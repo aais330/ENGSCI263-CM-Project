@@ -35,7 +35,7 @@ def plot_data():
     ax2.plot(t0, c0, color = 'blue', label = 'Nitrate Concentration') # plotting nitrate data
     ax2.set_ylabel('Nitrate Concentration(mg/L)', fontsize = 20)
 
-    plt.title('Annual Cattle Numbers in Southland and Nitrate Concentrations of Edendale Farm', fontsize = 20)
+    plt.title('Annual Cattle Numbers in Southland and Nitrate Concentrations of Edendale Aquifer', fontsize = 20)
     ax.plot([],[], 'b', label='Nitrate Concentration')
     ax.legend()
 
@@ -208,7 +208,8 @@ def what_ifs_uncertainty():
                 C_final[pi] = C[-1]
                 ax.plot(t_forecast,C,MAR_colours[i],lw=0.3)
 
-        confidence_int(C,str(MAR_Pressures)+' MPa')
+        confidence_int(C_final,str(MAR_Pressures[i])+' MPa')
+        
 
     # plotting 100 alternative models before forecast
     t_pos = np.arange(1980,2020.01,step = 0.1)
