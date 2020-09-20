@@ -1,4 +1,5 @@
-#import this file to any other file to access the functions
+# Implementation of LPM model of Edendale aquifer
+
 import os
 import numpy as np
 from scipy.optimize import curve_fit

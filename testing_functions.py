@@ -1,3 +1,5 @@
+# Scipt that contains all code tests
+
 import os
 import numpy as np
 from model_functions import *
@@ -104,6 +106,7 @@ def test_dCdt():
 
     print("dCdt tests passed \n")
 
+# Convergence Analysis
 def convergence_analysis():
     '''
     Produces a convergence analysis plot for our LPM model.
@@ -332,6 +335,7 @@ def concentration_benchmark2():
     plt.savefig('Plots'+ os.sep +"concentration_benchmark2.png")
     plt.close(fig)
 
+# Unit tests for Improved Euler solvers
 def test_solvedPdt():
     '''
     Testing the solve_dPdt functions with the simplified dPdt equation
@@ -364,11 +368,9 @@ def test_solvedCdt():
 
     # answer using improved euler calculator 
     # https://www.emathhelp.net/calculators/differential-equations/improved-euler-heun-calculator/
-    # Using initial condition of C(0)=0.2
 
     # # Test with negative cows
     test_1=solve_dCdt(dCdt_simplified,t,P,b1,alpha,bc,tau)
-    # ans_1=[0,-4.825,-9.9]
     ans_1=[0,-4.785,-9.5]
 
     for i in range(len(ans_1)):
@@ -376,7 +378,6 @@ def test_solvedCdt():
 
     # # Test with positive cows
     test_2=solve_dCdt(dCdt_simplified1,t,P,b1,alpha,bc,tau)
-    # ans_2=[0,5.175,10.1]
     ans_2=[0,4.875,9.5]
 
     for i in range(len(ans_2)):

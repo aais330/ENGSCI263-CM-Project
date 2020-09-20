@@ -1,14 +1,28 @@
-# ENGSCI263-CM-Project
+# ENGSCI263-CM-Project, Group 12 Nitrate Leaching
+A lumped parameter model of the Edendale aquifer.
+Developed by Anton Aish, Jenny Choi, William Laughton, Annie Li, Sidharth Varma
 
-# Nitrate Leaching
-This project was made to model the concentration of nitrate in the Southland aquifers. We calibrated our model to fit the data as closely as possible and then accounted for the uncertainty in the parameters. We then made predictions of the future using different combinations of sets of parameters.
+## Table of contents
+* Project Summary
+* Technologies
+* Installation
+* setup
 
-# Recommendation
-Based on the predictions made, we make a recommendation on whether an active carbon sink should be used or if the managed aquifer recharge should be implemented.
+## Project Summary
+This project contains the code that models nitrate concentrations within the Edendale aquifer. The model is to aid Environment Southland in the resource consent of Dairy NZ's demonstration farm. Key aspects of this project include quantifying the effects of an active carbon sink and the potentional impacts of a managed aquifer recharge program.
+
+## Technologies
+This project is written in Python 3.7.4 and uses the following libraries.
+* os
+* numpy
+* scipy.optimize and scipy stats
+* matlibplot
 
 # Installation
-main model - main.py
-uncertainty/prediction - main.py
-unit tests - testing_functions.py
-convergence - testing_functions.py
+main script - main.py
+model implementation - mode_functions.py
+test suites - testing_functions.py
 data - nl.cows.txt, nl_n.csv
+
+## Set up
+To run this project first download the repository and open in Visual Studio Code or similar. To generate all relevant modelling output run the 'main.py' script.
