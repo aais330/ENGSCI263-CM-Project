@@ -20,7 +20,7 @@ This project is written in Python 3.7.4 and uses the following libraries.
 
 # Installation
 * main script - main.py
-* model implementation - mode_functions.py
+* model implementation - model_functions.py
 * test suites - testing_functions.py
 * data - nl.cows.txt, nl_n.csv
 
