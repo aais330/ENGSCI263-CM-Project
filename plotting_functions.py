@@ -261,11 +261,15 @@ def without_acs_uncertainty():
         C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], 1, ps[pi][2], ps[pi][3],0), 'g-', lw=0.3)
 
+    confidence_int(C,"2030 concentration values without ACS")
+
     # With ACS
     for pi in range(0,ps.shape[0]):
+        C[pi] = LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0)[-1]
         ax.plot(t_pos, LPM_Model_forecast(t_pos, ps[pi][0], ps[pi][1], ps[pi][2], ps[pi][3],0), 'k-', lw=0.3)
 
-    confidence_int(C,"2030 concentration values with vs without ACS")
+    
+    confidence_int(C,"2030 concentration values with ACS")
    
     # Adding labels and legend
     ax.plot([],[], 'k-', label = 'With ACS')
