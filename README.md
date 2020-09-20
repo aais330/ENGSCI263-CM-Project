@@ -19,10 +19,10 @@ This project is written in Python 3.7.4 and uses the following libraries.
 * matlibplot
 
 # Installation
-main script - main.py
-model implementation - mode_functions.py
-test suites - testing_functions.py
-data - nl.cows.txt, nl_n.csv
+* main script - main.py
+* model implementation - mode_functions.py
+* test suites - testing_functions.py
+* data - nl.cows.txt, nl_n.csv
 
 ## Set up
 To run this project first download the repository and open in Visual Studio Code or similar. To generate all relevant modelling output run the 'main.py' script.
